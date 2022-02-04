@@ -251,7 +251,7 @@ paket-files/
 .idea/
 *.sln.iml
 
-src/MvMangement.Web.Mvc/secrets.json
-src/MvMangement.Web.Host/secrets.json
-src/MvMangement.Migrator/secrets.json
-src/MvMangement.Web.Host/App_Data/Logs/*
+src/MvManagement.Web.Mvc/secrets.json
+src/MvManagement.Web.Host/secrets.json
+src/MvManagement.Migrator/secrets.json
+src/MvManagement.Web.Host/App_Data/Logs/*
