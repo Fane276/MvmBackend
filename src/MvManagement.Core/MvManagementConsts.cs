@@ -15,6 +15,6 @@ namespace MvManagement
         /// Default pass phrase for SimpleStringCipher decrypt/encrypt operations
         /// </summary>
         public static readonly string DefaultPassPhrase =
-            DebugHelper.IsDebug ? "gsKxGZ012HLL3MI5" : "743f79a73b57493c9675be75b10cd985";
+            DebugHelper.IsDebug ? "gsKxGZ012HLL3MI5" : "166cae859c244766bfb5724738d5e34f";
     }
 }
