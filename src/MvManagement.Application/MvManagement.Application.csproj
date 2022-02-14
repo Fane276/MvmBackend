@@ -12,6 +12,10 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\modules\catalogue\Catalogue.Auto\Catalogue.Auto.csproj" />
     <ProjectReference Include="..\MvManagement.Core\MvManagement.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Catalogues\Auto\" />
   </ItemGroup>
 </Project>
