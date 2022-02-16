@@ -5,7 +5,7 @@ using Abp.Domain.Entities;
 namespace Catalogue.Auto
 {
     [Table("tblCatAutoMakeCategory", Schema = "cat")]
-    public class AutoMakeCategory : Entity
+    public class MakeCategoryAuto : Entity
     {
         [Key]
         [Required]

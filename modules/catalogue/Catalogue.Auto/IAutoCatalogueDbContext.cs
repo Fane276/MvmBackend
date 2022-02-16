@@ -5,6 +5,7 @@ namespace Catalogue.Auto
     public interface IAutoCatalogueDbContext 
     {
         DbSet<MakeAuto> MakeAuto { get; }
-        DbSet<MakeAuto> ModelAuto { get; }
+        DbSet<ModelAuto> ModelAuto { get; }
+        DbSet<MakeCategoryAuto> MakeCategoryAuto { get; }
     }
 }
