@@ -22,4 +22,8 @@
     <PackageReference Include="Abp.ZeroCore.EntityFrameworkCore" Version="7.0.0" />
     <PackageReference Include="Castle.Windsor.MsDependencyInjection" Version="3.4.0" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\modules\catalogue\Catalogue.Auto\Catalogue.Auto.csproj" />
+    <ProjectReference Include="..\..\modules\catalogue\Catalogue.InsuranceCompany\Catalogue.InsuranceCompany.csproj" />
+  </ItemGroup>
 </Project>

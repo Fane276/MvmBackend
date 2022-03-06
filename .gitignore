@@ -255,3 +255,5 @@ src/MvManagement.Web.Mvc/secrets.json
 src/MvManagement.Web.Host/secrets.json
 src/MvManagement.Migrator/secrets.json
 src/MvManagement.Web.Host/App_Data/Logs/*
+
+build/outputs/*

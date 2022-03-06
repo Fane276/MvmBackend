@@ -1,0 +1,24 @@
+USE [MvManagementDb]
+GO
+SET IDENTITY_INSERT [cat].[tblCatInsuranceCompany] ON 
+GO
+INSERT [cat].[tblCatInsuranceCompany] ([IdInsuranceCompany], [InsuranceCompany]) VALUES (1, N'Allianz-Tiriac')
+GO
+INSERT [cat].[tblCatInsuranceCompany] ([IdInsuranceCompany], [InsuranceCompany]) VALUES (2, N'Asirom')
+GO
+INSERT [cat].[tblCatInsuranceCompany] ([IdInsuranceCompany], [InsuranceCompany]) VALUES (3, N'Euroins')
+GO
+INSERT [cat].[tblCatInsuranceCompany] ([IdInsuranceCompany], [InsuranceCompany]) VALUES (4, N'Generali')
+GO
+INSERT [cat].[tblCatInsuranceCompany] ([IdInsuranceCompany], [InsuranceCompany]) VALUES (5, N'Groupama')
+GO
+INSERT [cat].[tblCatInsuranceCompany] ([IdInsuranceCompany], [InsuranceCompany]) VALUES (6, N'Omniasig')
+GO
+INSERT [cat].[tblCatInsuranceCompany] ([IdInsuranceCompany], [InsuranceCompany]) VALUES (7, N'Uniqa')
+GO
+INSERT [cat].[tblCatInsuranceCompany] ([IdInsuranceCompany], [InsuranceCompany]) VALUES (8, N'Grawe')
+GO
+INSERT [cat].[tblCatInsuranceCompany] ([IdInsuranceCompany], [InsuranceCompany]) VALUES (9, N'Axeria')
+GO
+SET IDENTITY_INSERT [cat].[tblCatAutoMake] OFF
+GO

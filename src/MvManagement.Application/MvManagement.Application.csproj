@@ -13,6 +13,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\modules\catalogue\Catalogue.Auto\Catalogue.Auto.csproj" />
+    <ProjectReference Include="..\..\modules\catalogue\Catalogue.InsuranceCompany\Catalogue.InsuranceCompany.csproj" />
     <ProjectReference Include="..\MvManagement.Core\MvManagement.Core.csproj" />
   </ItemGroup>
   <ItemGroup>

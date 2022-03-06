@@ -29,7 +29,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "modules", "modules", "{A7E9
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "catalogue", "catalogue", "{9C702D66-1E06-4A3F-A02A-3DC4CCD5624D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalogue.Auto", "modules\catalogue\Catalogue.Auto\Catalogue.Auto.csproj", "{9BB56D07-3BF8-4C60-868A-656CF0AC3FC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Catalogue.Auto", "modules\catalogue\Catalogue.Auto\Catalogue.Auto.csproj", "{9BB56D07-3BF8-4C60-868A-656CF0AC3FC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalogue.InsuranceCompany", "modules\catalogue\Catalogue.InsuranceCompany\Catalogue.InsuranceCompany.csproj", "{E894B30D-C82C-4601-B529-7ACFDDD270E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,6 +79,10 @@ Global
 		{9BB56D07-3BF8-4C60-868A-656CF0AC3FC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9BB56D07-3BF8-4C60-868A-656CF0AC3FC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9BB56D07-3BF8-4C60-868A-656CF0AC3FC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E894B30D-C82C-4601-B529-7ACFDDD270E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E894B30D-C82C-4601-B529-7ACFDDD270E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E894B30D-C82C-4601-B529-7ACFDDD270E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E894B30D-C82C-4601-B529-7ACFDDD270E9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -93,6 +99,7 @@ Global
 		{CA86CF6F-5D9E-4DAC-9CCB-0F87B519E087} = {F10AA149-2626-486E-85BB-9CD5365F3016}
 		{9C702D66-1E06-4A3F-A02A-3DC4CCD5624D} = {A7E958ED-C3B3-452C-ABE6-4D19111B0266}
 		{9BB56D07-3BF8-4C60-868A-656CF0AC3FC3} = {9C702D66-1E06-4A3F-A02A-3DC4CCD5624D}
+		{E894B30D-C82C-4601-B529-7ACFDDD270E9} = {9C702D66-1E06-4A3F-A02A-3DC4CCD5624D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9A55C749-0BFF-4EFD-8499-12A2CB3B5B07}
