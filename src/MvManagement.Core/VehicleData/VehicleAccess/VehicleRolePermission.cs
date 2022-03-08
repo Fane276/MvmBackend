@@ -11,18 +11,16 @@ namespace MvManagement.VehicleData.VehicleAccess
     [Table("tblVehicleRolePermission", Schema = "veh")]
     public class VehicleRolePermission : IFullAudited
     {
-        [Key]
-        [Required]
-        [ForeignKey(nameof(VehiclePermission))]
-        [Column("IdVehiclePermission")]
-        public int IdPermission { get; set; }
-        public VehiclePermission VehiclePermission { get; set; }
-        [Key]
         [Required]
         [ForeignKey(nameof(VehicleRole))]
         [Column("IdVehicleRole")]
         public int IdRole { get; set; }
         public VehicleRole VehicleRole { get; set; }
+        [Required]
+        [ForeignKey(nameof(VehiclePermission))]
+        [Column("IdVehiclePermission")]
+        public int IdPermission { get; set; }
+        public VehiclePermission VehiclePermission { get; set; }
 
         public DateTime CreationTime { get; set; }
         public long? CreatorUserId { get; set; }

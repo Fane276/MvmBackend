@@ -24,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\modules\catalogue\Catalogue.Auto\Catalogue.Auto.csproj" />
+    <ProjectReference Include="..\..\modules\catalogue\Catalogue.Documents\Catalogue.Documents.csproj" />
     <ProjectReference Include="..\..\modules\catalogue\Catalogue.InsuranceCompany\Catalogue.InsuranceCompany.csproj" />
   </ItemGroup>
 </Project>
