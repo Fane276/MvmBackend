@@ -21,13 +21,13 @@ namespace MvManagement.VehicleData.VehicleAccess
         [Column("IdVehicleRole")]
         public int IdRole { get; set; }
         [Required]
-        [Column("IdVehicleRole")]
-        public int IdVehicle { get; set; }
+        [Column("IdVehicle")]
+        public long IdVehicle { get; set; }
 
 
         [ForeignKey(nameof(User))]
         [Column("UserId")]
-        public int? UserId { get; set; }
+        public long? UserId { get; set; }
         public User User { get; set; }
     }
 }

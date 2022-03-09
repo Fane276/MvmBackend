@@ -28,7 +28,7 @@ namespace MvManagement.VehicleData.VehicleAccess
         [CanBeNull]
         [ForeignKey(nameof(Vehicle))]
         [Column("IdVehicle")]
-        public int? IdVehicle { get; set; }
+        public long? IdVehicle { get; set; }
         public Vehicle Vehicle { get; set; }
         [CanBeNull]
         [ForeignKey(nameof(VehicleRole))]
@@ -38,7 +38,7 @@ namespace MvManagement.VehicleData.VehicleAccess
         [CanBeNull]
         [ForeignKey(nameof(User))]
         [Column("UserId")]
-        public int? UserId { get; set; }
+        public long? UserId { get; set; }
         public User User { get; set; }
 
     }
