@@ -1,22 +1,28 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using JetBrains.Annotations;
 
 namespace MvManagement.VehicleData.VehicleAccess
 {
     [Table("tblVehicleRole", Schema = "veh")]
-    public class VehicleRole : Entity
+    public class VehicleRole : FullAuditedEntity, IMayHaveTenant
     {
         [Key]
         [Required]
         [Column("IdVehicleRole")]
         public int Id { get; set; }
         [Required]
-        [Column("VehicleRole")]
-        public int Title { get; set; }
+        [Column("DisplayName")]
+        public int DisplayName { get; set; }
+        [Required]
+        [Column("Name")]
+        public int Name { get; set; }
         [CanBeNull]
-        [Column("RoleDescription")]
+        [Column("Description")]
         public string Description { get; set; }
+
+        public int? TenantId { get; set; }
     }
 }

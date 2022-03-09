@@ -26,8 +26,8 @@ namespace MvManagement.EntityFrameworkCore
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<VehicleRolePermission>()
-                .HasKey(nameof(VehicleRolePermission.IdRole), nameof(VehicleRolePermission.IdPermission));
+            modelBuilder.Entity<VehicleRoleUser>()
+                .HasIndex(p => new { p.UserId, p.IdVehicle }).IsUnique();
         }
 
         #region Catalogues
@@ -45,7 +45,7 @@ namespace MvManagement.EntityFrameworkCore
         public DbSet<VehicleAccess> VehicleAccess { get; }
         public DbSet<VehiclePermission> VehiclePermission { get; }
         public DbSet<VehicleRole> VehicleRole { get; }
-        public DbSet<VehicleRolePermission> VehicleRolePermissions { get; }
+        public DbSet<VehicleRoleUser> VehicleRoleUser { get; }
         #endregion
 
         #region Documents
