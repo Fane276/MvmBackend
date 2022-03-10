@@ -12,7 +12,7 @@ namespace MvManagement.VehicleData.VehicleAccess
         [Key]
         [Required]
         [Column("IdVehicle")]
-        public long Id { get; set; }
+        public override long Id { get; set; }
         public int? TenantId { get; set; }
         [Required]
         [Column("IdUser")]

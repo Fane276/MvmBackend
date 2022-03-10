@@ -12,10 +12,7 @@ namespace MvManagement.VehicleData.VehicleAccess
         [Key]
         [Required]
         [Column("IdVehicleRole")]
-        public int Id { get; set; }
-        [Required]
-        [Column("DisplayName")]
-        public int DisplayName { get; set; }
+        public override int Id { get; set; }
         [Required]
         [Column("Name")]
         public int Name { get; set; }

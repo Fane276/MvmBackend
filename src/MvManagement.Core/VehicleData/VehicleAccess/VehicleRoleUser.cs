@@ -14,7 +14,7 @@ namespace MvManagement.VehicleData.VehicleAccess
     {
         [Required]
         [Column("Id")]
-        public long Id { get; set; }
+        public override long Id { get; set; }
         public DateTime CreationTime { get; set; }
         public long? CreatorUserId { get; set; }
         [Required]

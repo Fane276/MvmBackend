@@ -9,21 +9,20 @@ using MvManagement.Authorization.Users;
 namespace MvManagement.VehicleData.VehicleAccess
 {
     [Table("tblVehiclePermission", Schema = "veh")]
-    public class VehiclePermission : Entity, ICreationAudited, IMayHaveTenant
+    public class VehiclePermission : Entity<long>, ICreationAudited
     {
         [Key]
         [Required]
         [Column("IdVehiclePermission")]
-        public int Id { get; set; }
+        public override long Id { get; set; }
         public DateTime CreationTime { get; set; }
         public long? CreatorUserId { get; set; }
         [Required]
         [Column("Name")]
-        public int Name { get; set; }
+        public string Name { get; set; }
         [CanBeNull]
         [Column("PermissionDescription")]
         public string Description { get; set; }
-        public int? TenantId { get; set; }
 
         [CanBeNull]
         [ForeignKey(nameof(Vehicle))]
