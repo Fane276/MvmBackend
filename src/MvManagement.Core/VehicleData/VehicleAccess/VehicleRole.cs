@@ -15,7 +15,7 @@ namespace MvManagement.VehicleData.VehicleAccess
         public override int Id { get; set; }
         [Required]
         [Column("Name")]
-        public int Name { get; set; }
+        public string Name { get; set; }
         [CanBeNull]
         [Column("Description")]
         public string Description { get; set; }

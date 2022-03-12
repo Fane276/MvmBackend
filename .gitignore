@@ -257,3 +257,5 @@ src/MvManagement.Migrator/secrets.json
 src/MvManagement.Web.Host/App_Data/Logs/*
 
 build/outputs/*
+
+src/MvManagement.Web.Mvc/App_Data/Logs/*

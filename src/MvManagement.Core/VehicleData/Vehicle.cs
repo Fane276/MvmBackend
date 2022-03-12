@@ -12,7 +12,7 @@ namespace MvManagement.VehicleData
         [Key]
         [Required]
         [Column("IdVehicle")]
-        public long Id { get; set; }
+        public override long Id { get; set; }
 
         [CanBeNull]
         [MaxLength(250)]

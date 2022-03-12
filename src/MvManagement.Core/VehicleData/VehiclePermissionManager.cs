@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Security.Authentication;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using Abp;
 using Abp.Application.Services;
 using Abp.Domain.Repositories;
-using Castle.Core.Internal;
 using Microsoft.EntityFrameworkCore;
 using MvManagement.Authorization.Users;
 using MvManagement.VehicleData.VehicleAccess;
@@ -30,7 +27,7 @@ namespace MvManagement.VehicleData
             _vehicleRoleUserRepository = vehicleRoleUserRepository;
         }
 
-        public async Task<bool> CheckPermission(long vehicleId, string vehiclePermission)
+        public async Task<bool> CheckCurrentUserPermissionAsync(long vehicleId, string vehiclePermission)
         {
             if (!_userManager.AbpSession.UserId.HasValue)
             {
@@ -39,6 +36,11 @@ namespace MvManagement.VehicleData
 
             var userId = _userManager.AbpSession.UserId;
 
+            return await CheckPermissionAsync((long)userId, vehicleId, vehiclePermission);
+        }
+
+        public async Task<bool> CheckPermissionAsync(long userId, long vehicleId, string vehiclePermission)
+        {
             var idRoleOfUserPerCar = await _vehicleRoleUserRepository.GetAll()
                 .Where(r => r.IdVehicle == vehicleId && r.UserId == userId)
                 .Select(r=>r.IdRole)
@@ -57,31 +59,68 @@ namespace MvManagement.VehicleData
             return rolePermission != null;
         }
 
-        public async Task AsignOrUpdatePermissionToRole(RolePermissionAssign input)
+        public async Task<long> AsignPermissionAndGetIdAsync(PermissionAssign input)
         {
-            await _vehiclePermissionRepository.InsertOrUpdateAsync(new VehiclePermission()
+            var permission = await _vehiclePermissionRepository.GetAll()
+                .FirstOrDefaultAsync(p => p.Name.Equals(input.Name));
+            if (permission == null)
             {
-                Id = input.Id,
+                throw new AbpException("Permission does not exist");
+            }
+
+            if (input.UserId != null)
+            {
+
+                var hasPermission = await CheckPermissionAsync((long)input.UserId, input.IdVehicle, input.Name);
+                if (hasPermission)
+                {
+                    throw new AbpException("User already have this permission");
+                }
+                
+                return await _vehiclePermissionRepository.InsertOrUpdateAndGetIdAsync(new VehiclePermission()
+                {
+                    UserId = input.UserId,
+                    Name = input.Name,
+                    IdVehicle = input.IdVehicle,
+                    Description = permission.Description
+                });
+            }
+
+            if (input.IdRole == null)
+            {
+                throw new AbpException("IdRole or UserId should be defined");
+            }
+
+
+            var existsPermissionOnRole = await _vehiclePermissionRepository.GetAll()
+                .FirstOrDefaultAsync(p => 
+                    p.Name.Equals(input.Name) && p.IdVehicle == input.IdVehicle && p.IdRole == input.IdRole) != null;
+
+            if (existsPermissionOnRole)
+            {
+                throw new AbpException("User role already have this permission");
+            }
+            return await _vehiclePermissionRepository.InsertOrUpdateAndGetIdAsync(new VehiclePermission()
+            {
                 IdRole = input.IdRole,
                 Name = input.Name,
-                Description = input.Description,
-                TenantId = input.TenantId
-            });
-        }
-        public async Task AsignOrUpdatePermissionToUser(UserPermissionAssign input)
-        {
-            await _vehiclePermissionRepository.InsertOrUpdateAsync(new VehiclePermission()
-            {
-                Id = input.Id,
-                UserId = input.UserId,
-                Name = input.Name,
-                Description = input.Description,
-                TenantId = input.TenantId
+                IdVehicle = input.IdVehicle,
+                Description = permission.Description
             });
         }
 
-        public async Task CreateRoleAsync(VehicleRole vehicleRole, long idVehicle, List<string> vehicleRolePermissions)
+        
+        public async Task<int> CreateRoleAndGetIdAsync(VehicleRole vehicleRole, long idVehicle, List<string> vehicleRolePermissions)
         {
+            var permissionsNotAvailable = _vehiclePermissionRepository.GetAll()
+                .Any(p => !vehicleRolePermissions.Contains(p.Name));
+
+            if (permissionsNotAvailable)
+            {
+                throw new AbpException("One of the requested permission is not defined");
+            }
+
+
             var idRole = await _vehicleRoleRepository.InsertAndGetIdAsync(vehicleRole);
 
             foreach (var permission in vehicleRolePermissions)
@@ -91,18 +130,19 @@ namespace MvManagement.VehicleData
                     IdRole = idRole,
                     Name = permission,
                     IdVehicle = idVehicle,
-                    TenantId = vehicleRole.TenantId
                 });
             }
+
+            return idRole;
         }
 
-        public async Task DeletePermissionFromRoleAsync(int idRole, string permissionName)
+        public async Task DeletePermissionFromRoleAsync(int idRole, long idVehicle, string permissionName)
         {
-            await _vehiclePermissionRepository.DeleteAsync(p => p.IdRole == idRole && p.Name == permissionName);
+            await _vehiclePermissionRepository.DeleteAsync(p => p.IdRole == idRole && p.IdVehicle == idVehicle && p.Name == permissionName);
         }
-        public async Task DeletePermissionFromUserAsync(int idUser, string permissionName)
+        public async Task DeletePermissionFromUserAsync(int idUser, long idVehicle, string permissionName)
         {
-            await _vehiclePermissionRepository.DeleteAsync(p => p.UserId == idUser && p.Name == permissionName);
+            await _vehiclePermissionRepository.DeleteAsync(p => p.UserId == idUser && p.IdVehicle == idVehicle && p.Name == permissionName);
         }
 
         public async Task<IEnumerable<VehiclePermission>> GetCurrentUserPermissions(long idVehicle)

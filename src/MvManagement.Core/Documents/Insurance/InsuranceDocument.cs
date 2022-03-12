@@ -7,12 +7,12 @@ using JetBrains.Annotations;
 namespace MvManagement.Documents.Insurance
 {
     [Table("tblInsuranceDocuments", Schema = "doc")]
-    public class InsuranceDocument : DatedDocumentAudited
+    public class InsuranceDocument : DatedDocumentAudited<long>
     {
         [Key]
         [Required]
         [Column("IdInsuranceDocument")]
-        public long Id { get; set; }
+        public override long Id { get; set; }
 
         [Required]
         public InsuranceType InsuranceType { get; set; }

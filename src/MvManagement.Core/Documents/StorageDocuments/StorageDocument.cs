@@ -5,12 +5,12 @@ using Catalogue.Documents;
 namespace MvManagement.Documents.StorageDocuments
 {
     [Table("tblStorageDocument", Schema = "doc")]
-    public class StorageDocument : DocumentAudited
+    public class StorageDocument : DocumentAudited<long>
     {
         [Key]
         [Required]
         [Column("IdStorageDocument")]
-        public long Id { get; set; }
+        public override long Id { get; set; }
 
         [Required]
         [ForeignKey(nameof(StorageDocumentType))]

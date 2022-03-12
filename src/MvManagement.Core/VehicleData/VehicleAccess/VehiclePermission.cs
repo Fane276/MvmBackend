@@ -23,11 +23,10 @@ namespace MvManagement.VehicleData.VehicleAccess
         [CanBeNull]
         [Column("PermissionDescription")]
         public string Description { get; set; }
-
-        [CanBeNull]
+        
         [ForeignKey(nameof(Vehicle))]
         [Column("IdVehicle")]
-        public long? IdVehicle { get; set; }
+        public long? IdVehicle { get; set; }  // id will be null for seeding permissions
         public Vehicle Vehicle { get; set; }
         [CanBeNull]
         [ForeignKey(nameof(VehicleRole))]

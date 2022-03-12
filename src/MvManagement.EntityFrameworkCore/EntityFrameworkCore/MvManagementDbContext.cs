@@ -42,7 +42,6 @@ namespace MvManagement.EntityFrameworkCore
         public DbSet<Vehicle> Vehicle { get; }
 
         #region VehicleAccess
-        public DbSet<VehicleAccess> VehicleAccess { get; }
         public DbSet<VehiclePermission> VehiclePermission { get; }
         public DbSet<VehicleRole> VehicleRole { get; }
         public DbSet<VehicleRoleUser> VehicleRoleUser { get; }
