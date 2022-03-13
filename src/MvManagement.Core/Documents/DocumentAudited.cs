@@ -8,7 +8,7 @@ namespace MvManagement.Documents
 {
     public class DocumentAudited<T> : FullAuditedEntity<T>
     {
-        public Guid ImageRef { get; set; }
+        //public Guid ImageRef { get; set; }
 
         [Required]
         [ForeignKey(nameof(Vehicle))]

@@ -6,6 +6,7 @@
         public static class UserRoles
         {
             private static string BasePermissionName = $"{VehiclePermissionDomain}.UserRoles";
+            public static string View = $"{BasePermissionName}.View";
             public static string Add = $"{BasePermissionName}.Add";
             public static string Remove = $"{BasePermissionName}.Remove";
             public static string Update = $"{BasePermissionName}.Update";

@@ -4,8 +4,8 @@ namespace Catalogue.Auto
 {
     public interface IAutoCatalogueDbContext 
     {
-        DbSet<MakeAuto> MakeAuto { get; }
-        DbSet<ModelAuto> ModelAuto { get; }
-        DbSet<MakeCategoryAuto> MakeCategoryAuto { get; }
+        DbSet<MakeAuto> MakeAuto { get; set; }
+        DbSet<ModelAuto> ModelAuto { get; set; }
+        DbSet<MakeCategoryAuto> MakeCategoryAuto { get; set; }
     }
 }

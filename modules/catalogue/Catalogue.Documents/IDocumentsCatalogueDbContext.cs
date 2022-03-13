@@ -4,7 +4,7 @@ namespace Catalogue.Documents
 {
     public interface IDocumentsCatalogueDbContext
     {
-        DbSet<PeriodicalDocumentType> PeriodicalDocumentTypes { get; }
-        DbSet<StorageDocumentType> StorageDocumentType { get; }
+        DbSet<PeriodicalDocumentType> PeriodicalDocumentTypes { get; set; }
+        DbSet<StorageDocumentType> StorageDocumentType { get; set; }
     }
 }

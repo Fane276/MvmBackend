@@ -19,6 +19,30 @@ namespace MvManagement.EntityFrameworkCore
         IDocumentsCatalogueDbContext,
         IInsuranceCompanyCatalogueDbContext
     {
+        #region Catalogues
+        public DbSet<MakeAuto> MakeAuto { get; set; }
+        public DbSet<ModelAuto> ModelAuto { get; set; }
+        public DbSet<MakeCategoryAuto> MakeCategoryAuto { get; set; }
+        public DbSet<InsuranceCompany> InsuranceCompany { get; set; }
+        public DbSet<PeriodicalDocumentType> PeriodicalDocumentTypes { get; set; }
+        public DbSet<StorageDocumentType> StorageDocumentType { get; set; }
+        #endregion
+
+        public DbSet<Vehicle> Vehicle { get; set; }
+
+        #region VehicleAccess
+        public DbSet<VehiclePermission> VehiclePermission { get; set; }
+        public DbSet<VehicleRole> VehicleRole { get; set; }
+        public DbSet<VehicleRoleUser> VehicleRoleUser { get; set; }
+        #endregion
+
+        #region Documents
+
+        public DbSet<InsuranceDocument> InsuranceDocument { get; set; }
+        public DbSet<PeriodicalDocument> PeriodicalDocument { get; set; }
+        public DbSet<StorageDocument> StorageDocument { get; set; }
+
+        #endregion
         public MvManagementDbContext(DbContextOptions<MvManagementDbContext> options)
             : base(options)
         {
@@ -30,29 +54,5 @@ namespace MvManagement.EntityFrameworkCore
                 .HasIndex(p => new { p.UserId, p.IdVehicle }).IsUnique();
         }
 
-        #region Catalogues
-        public DbSet<MakeAuto> MakeAuto { get; }
-        public DbSet<ModelAuto> ModelAuto { get; }
-        public DbSet<MakeCategoryAuto> MakeCategoryAuto { get; }
-        public DbSet<InsuranceCompany> InsuranceCompany { get; }
-        public DbSet<PeriodicalDocumentType> PeriodicalDocumentTypes { get; }
-        public DbSet<StorageDocumentType> StorageDocumentType { get; }
-        #endregion
-
-        public DbSet<Vehicle> Vehicle { get; }
-
-        #region VehicleAccess
-        public DbSet<VehiclePermission> VehiclePermission { get; }
-        public DbSet<VehicleRole> VehicleRole { get; }
-        public DbSet<VehicleRoleUser> VehicleRoleUser { get; }
-        #endregion
-
-        #region Documents
-
-        public DbSet<InsuranceDocument> InsuranceDocument { get; }
-        public DbSet<PeriodicalDocument> PeriodicalDocument { get; }
-        public DbSet<StorageDocument> StorageDocument { get; }
-
-        #endregion
     }
 }

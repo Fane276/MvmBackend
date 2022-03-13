@@ -4,6 +4,6 @@ namespace Catalogue.InsuranceCompany
 {
     public interface IInsuranceCompanyCatalogueDbContext
     {
-        DbSet<InsuranceCompany> InsuranceCompany { get; }
+        DbSet<InsuranceCompany> InsuranceCompany { get; set; }
     }
 }
