@@ -13,6 +13,8 @@ namespace MvManagement
         public override void PreInitialize()
         {
             Configuration.Authorization.Providers.Add<MvManagementAuthorizationProvider>();
+
+            Configuration.Modules.AbpAutoMapper().Configurators.Add(CustomDtoMapper.CreateMappings);
         }
 
         public override void Initialize()
