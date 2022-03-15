@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Authentication;
 using System.Threading.Tasks;
@@ -184,6 +185,34 @@ namespace MvManagement.VehicleData
                 .ToListAsync();
 
             return rolePermissions;
+        }
+
+        public async Task AsignUserRoleAsync(long idUser, string roleName, long idVehicle)
+        {
+            var role = await _vehicleRoleRepository.FirstOrDefaultAsync(r => r.Name.Equals(roleName));
+
+            if (role == null)
+            {
+                throw new NullReferenceException("Specified role does not exist");
+            }
+
+            await _vehicleRoleUserRepository.InsertAsync(new VehicleRoleUser()
+            {
+                IdRole = role.Id,
+                IdVehicle = idVehicle,
+                UserId = idUser,
+            });
+        }
+
+        public async Task AsignCurrentUserRoleAsync(string roleName, long idVehicle)
+        {
+            var currentUserId = AbpSession.UserId;
+            if (currentUserId == null)
+            {
+                throw new AuthenticationException("User not authenticated!");
+            }
+
+            await AsignUserRoleAsync((long)currentUserId, roleName, idVehicle);
         }
     }
 }

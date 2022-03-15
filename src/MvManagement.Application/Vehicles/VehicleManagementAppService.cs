@@ -2,13 +2,16 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Abp;
+using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.ObjectMapping;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MvManagement.Extensions.Dto.PageFilter;
 using MvManagement.Extensions.Dto.PageResult;
 using MvManagement.VehicleData;
 using MvManagement.VehicleData.VehicleAccess;
@@ -16,6 +19,7 @@ using MvManagement.Vehicles.Dto;
 
 namespace MvManagement.Vehicles
 {
+    [RemoteService(IsEnabled = false, IsMetadataEnabled = false)]
     public class VehicleManagementAppService : VehicleAppServiceBase, IVehicleManagementAppService
     {
         private readonly IRepository<Vehicle, long> _vehicleRepository;
@@ -35,7 +39,7 @@ namespace MvManagement.Vehicles
             _vehiclePermissionRepository = vehiclePermissionRepository;
         }
 
-        public async Task<PagedResultDto<VehicleDto>> GetCurrentUserPersonalVehiclesAsync(VehiclesPagedResultRequestDto input)
+        public async Task<PagedResultDto<VehicleDto>> GetCurrentUserPersonalVehiclesAsync(PagedSortedAndFilteredInputDto input)
         {
             var currentUserId = AbpSession.UserId;
 
@@ -55,8 +59,7 @@ namespace MvManagement.Vehicles
             return new PagedResultEnumerableDto<VehicleDto>(listOfVehicles, input).Get();
         }
 
-
-        public async Task<PagedResultDto<VehicleDto>> GetTenantVehiclesAsync(VehiclesPagedResultRequestDto input)
+        public async Task<PagedResultDto<VehicleDto>> GetTenantVehiclesAsync(PagedSortedAndFilteredInputDto input)
         {
             var currentUserId = AbpSession.UserId;
 
@@ -96,14 +99,24 @@ namespace MvManagement.Vehicles
         public async Task<long> CreateVehicleAsync(VehicleDto input)
         {
             var entity = Mapper.Map<Vehicle>(input);
+            var vehicleId =  await _vehicleRepository.InsertAndGetIdAsync(entity);
 
-            return await _vehicleRepository.InsertAndGetIdAsync(entity);
+            await CurrentUnitOfWork.SaveChangesAsync();
+
+            await VehiclePermissionManager.AsignCurrentUserRoleAsync("Owner", vehicleId);
+
+            return vehicleId;
         }
         public async Task UpdateVehicleAsync(VehicleDto input)
         {
             var entity = Mapper.Map<Vehicle>(input);
 
             await _vehicleRepository.UpdateAsync(entity);
+        }
+
+        public async Task DeleteVehicleAsync(long idVehicle)
+        {
+            await _vehicleRepository.DeleteAsync(v => v.Id == idVehicle);
         }
     }
 }

@@ -57,5 +57,8 @@ namespace MvManagement.VehicleData
         /// <param name="idVehicle">id of the vehicle on which permission are assigned</param>
         /// <returns></returns>
         Task<IEnumerable<VehiclePermission>> GetRolePermissions(int idRole, long idVehicle);
+
+        Task AsignUserRoleAsync(long idUser, string roleName, long idVehicle);
+        Task AsignCurrentUserRoleAsync(string roleName, long idVehicle);
     }
 }
