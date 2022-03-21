@@ -19,11 +19,18 @@ namespace MvManagement.Tests.Vehicles
             _vehiclePermissionManager = Resolve<IVehiclePermissionManager>();
         }
         [Fact]
-        public async Task CheckPermissionDoesNotExist_Test()
+        public async Task CheckPermission_Test()
         {
-            var output = await _vehiclePermissionManager.CheckCurrentUserPermissionAsync(0, VehiclePermissionNames.VehicleInfo.View);
+            var output = await _vehiclePermissionManager.CheckCurrentUserPermissionAsync(1, VehiclePermissionNames.VehicleInfo.View);
             
             output.ShouldBeFalse();
+
+            await _vehiclePermissionManager.AsignPermissionAndGetIdAsync(new PermissionAssign()
+                {IdVehicle = 1, UserId = AbpSession.UserId, Name = VehiclePermissionNames.VehicleInfo.View});
+            
+            output = await _vehiclePermissionManager.CheckCurrentUserPermissionAsync(1, VehiclePermissionNames.VehicleInfo.View);
+
+            output.ShouldBeTrue();
         }
 
         [Fact]
@@ -144,9 +151,12 @@ namespace MvManagement.Tests.Vehicles
             );
             idPermission.ShouldNotBe(0);
 
-            await _vehiclePermissionManager.DeletePermissionFromRoleAsync(1, 1, VehiclePermissionNames.VehicleInfo.View);
-
+            await _vehiclePermissionManager.DeletePermissionFromRoleAsync(1, 1, VehiclePermissionNames.VehicleInfo.Edit);
             var permission = await permissionRepository.FirstOrDefaultAsync(p => p.IdVehicle == 1 && p.IdRole == 1);
+            permission.ShouldNotBeNull();
+
+            await _vehiclePermissionManager.DeletePermissionFromRoleAsync(1, 1, VehiclePermissionNames.VehicleInfo.View);
+            permission = await permissionRepository.FirstOrDefaultAsync(p => p.IdVehicle == 1 && p.IdRole == 1);
             permission.ShouldBeNull();
         }
         [Fact]

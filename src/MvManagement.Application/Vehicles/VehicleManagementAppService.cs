@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Abp;
@@ -9,6 +10,7 @@ using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.ObjectMapping;
+using Abp.UI;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MvManagement.Extensions.Dto.PageFilter;
@@ -98,6 +100,15 @@ namespace MvManagement.Vehicles
 
         public async Task<long> CreateVehicleAsync(VehicleDto input)
         {
+            if (input.ProductionYear < 1886 || input.ProductionYear > DateTime.Today.Year)
+            {
+                throw new UserFriendlyException("Vehicle year is incorrect");
+            }
+            if (input.ChassisNo.Length != 17)
+            {
+                throw new InvalidDataException("Chassis no. is too long");
+            }
+
             var entity = Mapper.Map<Vehicle>(input);
             var vehicleId =  await _vehicleRepository.InsertAndGetIdAsync(entity);
 
