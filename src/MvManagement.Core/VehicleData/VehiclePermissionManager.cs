@@ -5,6 +5,7 @@ using System.Security.Authentication;
 using System.Threading.Tasks;
 using Abp;
 using Abp.Application.Services;
+using Abp.Authorization.Users;
 using Abp.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using MvManagement.Authorization.Users;
@@ -56,7 +57,17 @@ namespace MvManagement.VehicleData
             }
 
             var rolePermission = await _vehiclePermissionRepository.GetAll()
-                .FirstOrDefaultAsync(p => p.IdRole == idRoleOfUserPerCar && p.IdVehicle == vehicleId && p.Name.Equals(vehiclePermission));
+                .Join(
+                    _vehicleRoleUserRepository.GetAll(),
+                    p=>p.IdRole,
+                    vp=>vp.IdRole,
+                    (p, vp)=>new {permission = p, userClaim = vp}
+                    )
+                .Where(p => p.permission.IdRole == idRoleOfUserPerCar &&
+                            p.userClaim.IdVehicle == vehicleId &&
+                            p.userClaim.UserId == userId &&
+                            p.permission.Name.Equals(vehiclePermission))
+                .FirstOrDefaultAsync();
             return rolePermission != null;
         }
 
@@ -113,8 +124,10 @@ namespace MvManagement.VehicleData
         
         public async Task<int> CreateRoleAndGetIdAsync(VehicleRole vehicleRole, long idVehicle, List<string> vehicleRolePermissions)
         {
-            var permissionsNotAvailable = _vehiclePermissionRepository.GetAll()
-                .Any(p => !vehicleRolePermissions.Contains(p.Name));
+            var allPermissionsOnTenant = await _vehiclePermissionRepository.GetAll().Select(p=>p.Name).ToListAsync();
+
+            var permissionsNotAvailable = vehicleRolePermissions
+                .Any(p => !allPermissionsOnTenant.Contains(p));
 
             if (permissionsNotAvailable)
             {

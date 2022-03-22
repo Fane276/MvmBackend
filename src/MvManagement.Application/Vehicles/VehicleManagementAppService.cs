@@ -31,10 +31,9 @@ namespace MvManagement.Vehicles
 
         public VehicleManagementAppService(
             IVehiclePermissionManager vehiclePermissionManager,
-            IObjectMapper mapper, 
             IRepository<Vehicle, long> vehicleRepository, 
             IRepository<VehicleRoleUser, long> vehicleRoleUserRepository, 
-            IRepository<VehiclePermission, long> vehiclePermissionRepository) : base(vehiclePermissionManager, mapper)
+            IRepository<VehiclePermission, long> vehiclePermissionRepository) : base(vehiclePermissionManager)
         {
             _vehicleRepository = vehicleRepository;
             _vehicleRoleUserRepository = vehicleRoleUserRepository;
@@ -52,7 +51,7 @@ namespace MvManagement.Vehicles
 
             var listOfVehicles = await _vehicleRepository.GetAll()
                 .Where(v => v.UserId == currentUserId)
-                .Select(v => Mapper.Map<VehicleDto>(v))
+                .Select(v => ObjectMapper.Map<VehicleDto>(v))
                 .ToListAsync();
 
             listOfVehicles = listOfVehicles.WhereIf(!input.Filter.IsNullOrWhiteSpace(),
@@ -89,7 +88,7 @@ namespace MvManagement.Vehicles
 
             var listOfVehicles = await _vehicleRepository.GetAll()
                 .Where(v => v.TenantId == AbpSession.TenantId && !idsVehiclesUserHasAccess.Contains(v.Id))
-                .Select(v => Mapper.Map<VehicleDto>(v))
+                .Select(v => ObjectMapper.Map<VehicleDto>(v))
                 .ToListAsync();
 
             listOfVehicles = listOfVehicles.WhereIf(!input.Filter.IsNullOrWhiteSpace(),
@@ -109,7 +108,7 @@ namespace MvManagement.Vehicles
                 throw new InvalidDataException("Chassis no. is too long");
             }
 
-            var entity = Mapper.Map<Vehicle>(input);
+            var entity = ObjectMapper.Map<Vehicle>(input);
             var vehicleId =  await _vehicleRepository.InsertAndGetIdAsync(entity);
 
             await CurrentUnitOfWork.SaveChangesAsync();
@@ -120,7 +119,7 @@ namespace MvManagement.Vehicles
         }
         public async Task UpdateVehicleAsync(VehicleDto input)
         {
-            var entity = Mapper.Map<Vehicle>(input);
+            var entity = ObjectMapper.Map<Vehicle>(input);
 
             await _vehicleRepository.UpdateAsync(entity);
         }

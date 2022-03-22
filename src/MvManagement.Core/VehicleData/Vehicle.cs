@@ -23,7 +23,7 @@ namespace MvManagement.VehicleData
         [Required]
         public int ProductionYear{ get; set; }
         
-        [MaxLength(6)]
+        [MaxLength(7)]
         [Column("RegistrationNumber")]
         public string RegistrationNumber { get; set; }
 

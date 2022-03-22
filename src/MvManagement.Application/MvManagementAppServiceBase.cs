@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Abp.Application.Services;
 using Abp.IdentityFramework;
+using Abp.ObjectMapping;
 using Abp.Runtime.Session;
 using MvManagement.Authorization.Users;
 using MvManagement.MultiTenancy;
@@ -17,6 +18,7 @@ namespace MvManagement
         public TenantManager TenantManager { get; set; }
 
         public UserManager UserManager { get; set; }
+
 
         protected MvManagementAppServiceBase()
         {

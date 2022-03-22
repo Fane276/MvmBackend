@@ -1,9 +1,10 @@
 ﻿using Abp.Application.Services.Dto;
+using MvManagement.Extensions.Dto.PageFilter;
 
 namespace MvManagement.Vehicles.Dto
 {
-    public class VehiclesPagedResultRequestDto : PagedAndSortedResultRequestDto
+    public class VehiclesPagedResultRequestDto : PagedSortedAndFilteredInputDto
     {
-        public string Filter { get; set; }
+        public long IdVehicle { get; set; }
     }
 }

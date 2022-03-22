@@ -15,9 +15,9 @@ using MvManagement.Vehicles.Dto;
 
 namespace MvManagement.Web.Host.Controllers
 {
-    [Route("api/[controller]/[action]")]
     [ApiController]
     [AbpAuthorize]
+    [Route("api/[controller]/[action]")]
     public class VehicleController : MvManagementControllerBase
     {
         private readonly IVehicleManagementAppService _vehicleManagementAppService;

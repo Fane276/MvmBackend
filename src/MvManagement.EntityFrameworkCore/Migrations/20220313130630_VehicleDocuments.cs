@@ -66,7 +66,7 @@ namespace MvManagement.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     VehicleTitle = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
                     ProductionYear = table.Column<int>(type: "int", nullable: false),
-                    RegistrationNumber = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: true),
+                    RegistrationNumber = table.Column<string>(type: "nvarchar(7)", maxLength: 7, nullable: true),
                     ChassisNumber = table.Column<string>(type: "nvarchar(17)", maxLength: 17, nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
