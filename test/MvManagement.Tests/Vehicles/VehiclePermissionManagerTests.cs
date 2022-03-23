@@ -54,7 +54,7 @@ namespace MvManagement.Tests.Vehicles
             await Assert.ThrowsAsync<AbpException>(() => _vehiclePermissionManager.AsignPermissionAndGetIdAsync(
                 new PermissionAssign()
                 {
-                    Name = VehiclePermissionNames.VehicleInfo.View,
+                    Name = "permission",
                     IdRole = 1,
                     IdVehicle = 1
                 }
@@ -92,7 +92,7 @@ namespace MvManagement.Tests.Vehicles
             await Assert.ThrowsAsync<AbpException>(() => _vehiclePermissionManager.AsignPermissionAndGetIdAsync(
                 new PermissionAssign()
                 {
-                    Name = VehiclePermissionNames.VehicleInfo.View,
+                    Name = "permission",
                     UserId = 1,
                     IdVehicle = 1
                 }
