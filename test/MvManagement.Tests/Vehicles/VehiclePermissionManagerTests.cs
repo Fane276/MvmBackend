@@ -36,6 +36,17 @@ namespace MvManagement.Tests.Vehicles
         [Fact]
         public async Task CreateRole_Test()
         {
+            await Assert.ThrowsAsync<AbpException>(() => _vehiclePermissionManager.CreateRoleAndGetIdAsync(
+                new VehicleRole()
+                {
+                    Name = "Driver",
+                    TenantId = 0,
+                },
+                0,
+                new List<string> {VehiclePermissionNames.VehicleInfo.View, VehiclePermissionNames.VehicleInfo.Edit, "not defined permission"}
+            ));
+
+
             var idRole = await _vehiclePermissionManager.CreateRoleAndGetIdAsync(
                 new VehicleRole()
                 {
