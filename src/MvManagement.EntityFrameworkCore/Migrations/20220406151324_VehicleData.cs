@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MvManagement.Migrations
 {
-    public partial class VehicleDocuments : Migration
+    public partial class VehicleData : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -68,6 +68,12 @@ namespace MvManagement.Migrations
                     ProductionYear = table.Column<int>(type: "int", nullable: false),
                     RegistrationNumber = table.Column<string>(type: "nvarchar(7)", maxLength: 7, nullable: true),
                     ChassisNumber = table.Column<string>(type: "nvarchar(17)", maxLength: 17, nullable: true),
+                    TenantId = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<long>(type: "bigint", nullable: true),
+                    IdMakeAuto = table.Column<int>(type: "int", nullable: true),
+                    OtherAutoMake = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IdModelAuto = table.Column<int>(type: "int", nullable: true),
+                    OtherAutoModel = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -79,6 +85,23 @@ namespace MvManagement.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_tblVehicle", x => x.IdVehicle);
+                    table.ForeignKey(
+                        name: "FK_tblVehicle_AbpUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AbpUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_tblVehicle_tblCatAutoMake_IdMakeAuto",
+                        column: x => x.IdMakeAuto,
+                        principalSchema: "cat",
+                        principalTable: "tblCatAutoMake",
+                        principalColumn: "IdMake");
+                    table.ForeignKey(
+                        name: "FK_tblVehicle_tblCatAutoModel_IdModelAuto",
+                        column: x => x.IdModelAuto,
+                        principalSchema: "cat",
+                        principalTable: "tblCatAutoModel",
+                        principalColumn: "IdModel");
                 });
 
             migrationBuilder.CreateTable(
@@ -312,6 +335,24 @@ namespace MvManagement.Migrations
                 schema: "doc",
                 table: "tblStorageDocument",
                 column: "IdVehicle");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblVehicle_IdMakeAuto",
+                schema: "veh",
+                table: "tblVehicle",
+                column: "IdMakeAuto");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblVehicle_IdModelAuto",
+                schema: "veh",
+                table: "tblVehicle",
+                column: "IdModelAuto");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tblVehicle_UserId",
+                schema: "veh",
+                table: "tblVehicle",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tblVehiclePermission_IdVehicle",

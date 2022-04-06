@@ -19,7 +19,7 @@ namespace MvManagement.Vehicles
         /// </summary>
         /// <param name="input"></param>
         /// <returns>Id of the new inserted vehicle</returns>
-        Task<long> CreateVehicleAsync(VehicleDto input);
+        Task<long> CreateVehicleAsync(VehicleCreateDto input);
         /// <summary>
         /// Update vehicle, if tenantId is specified than the ownership is on tenant, if not the ownership is on user
         /// Chassis number should be exact 17 characters long

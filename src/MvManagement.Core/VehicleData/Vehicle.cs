@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
+using Catalogue.Auto;
 using JetBrains.Annotations;
 using MvManagement.Authorization.Users;
 
@@ -38,5 +39,17 @@ namespace MvManagement.VehicleData
         [Column("UserId")]
         public long? UserId { get; set; }
         public User User { get; set; }
+        
+        [ForeignKey(nameof(MakeAuto))]
+        [Column("IdMakeAuto")]
+        public int? IdMakeAuto { get; set; }
+        public MakeAuto MakeAuto{ get; set; }
+        public string OtherAutoMake { get; set; }
+
+        [ForeignKey(nameof(ModelAuto))]
+        [Column("IdModelAuto")]
+        public int? IdModelAuto { get; set; }
+        public ModelAuto ModelAuto { get; set; }
+        public string OtherAutoModel { get; set; }
     }
 }

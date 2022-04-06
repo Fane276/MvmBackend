@@ -11,6 +11,7 @@ using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.ObjectMapping;
 using Abp.UI;
+using Catalogue.Auto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MvManagement.Extensions.Dto.PageFilter;
@@ -27,17 +28,23 @@ namespace MvManagement.Vehicles
         private readonly IRepository<Vehicle, long> _vehicleRepository;
         private readonly IRepository<VehicleRoleUser, long> _vehicleRoleUserRepository;
         private readonly IRepository<VehiclePermission, long> _vehiclePermissionRepository;
+        private readonly IRepository<MakeAuto> _makeAutoRepository;
+        private readonly IRepository<ModelAuto> _modelAutoRepository;
 
 
         public VehicleManagementAppService(
             IVehiclePermissionManager vehiclePermissionManager,
             IRepository<Vehicle, long> vehicleRepository, 
             IRepository<VehicleRoleUser, long> vehicleRoleUserRepository, 
-            IRepository<VehiclePermission, long> vehiclePermissionRepository) : base(vehiclePermissionManager)
+            IRepository<VehiclePermission, long> vehiclePermissionRepository, 
+            IRepository<MakeAuto> makeAutoRepository,
+            IRepository<ModelAuto> modelAutoRepository) : base(vehiclePermissionManager)
         {
             _vehicleRepository = vehicleRepository;
             _vehicleRoleUserRepository = vehicleRoleUserRepository;
             _vehiclePermissionRepository = vehiclePermissionRepository;
+            _makeAutoRepository = makeAutoRepository;
+            _modelAutoRepository = modelAutoRepository;
         }
 
         public async Task<PagedResultDto<VehicleDto>> GetCurrentUserPersonalVehiclesAsync(PagedSortedAndFilteredInputDto input)
@@ -49,9 +56,26 @@ namespace MvManagement.Vehicles
                 throw new AbpAuthorizationException("User not authenticated");
             }
 
-            var listOfVehicles = await _vehicleRepository.GetAll()
-                .Where(v => v.UserId == currentUserId)
-                .Select(v => ObjectMapper.Map<VehicleDto>(v))
+            var listOfVehicles = await (from vehicle in _vehicleRepository.GetAll()
+                where vehicle.UserId == currentUserId
+                join makeAuto in _makeAutoRepository.GetAll() on vehicle.IdMakeAuto equals makeAuto.Id into make
+                from makeOrDefault in make.DefaultIfEmpty()
+                join modelAuto in _modelAutoRepository.GetAll() on vehicle.IdModelAuto equals modelAuto.Id into model
+                from modelOrDefault in model.DefaultIfEmpty()
+                select new VehicleDto()
+                {
+                    Id = vehicle.Id,
+                    UserId = vehicle.UserId,
+                    TenantId = vehicle.TenantId,
+                    ChassisNo = vehicle.ChassisNo,
+                    ProductionYear = vehicle.ProductionYear,
+                    RegistrationNumber = vehicle.RegistrationNumber,
+                    Title = vehicle.Title,
+                    IdMakeAuto = vehicle.IdMakeAuto,
+                    IdModelAuto = vehicle.IdMakeAuto,
+                    MakeAuto = makeOrDefault.Name,
+                    ModelAuto = modelOrDefault.Name
+                })
                 .ToListAsync();
 
             listOfVehicles = listOfVehicles.WhereIf(!input.Filter.IsNullOrWhiteSpace(),
@@ -86,9 +110,26 @@ namespace MvManagement.Vehicles
                 .Select(o => o.vehiclePermission.IdVehicle)
                 .ToListAsync();
 
-            var listOfVehicles = await _vehicleRepository.GetAll()
-                .Where(v => v.TenantId == AbpSession.TenantId && !idsVehiclesUserHasAccess.Contains(v.Id))
-                .Select(v => ObjectMapper.Map<VehicleDto>(v))
+            var listOfVehicles = await (from vehicle in _vehicleRepository.GetAll()
+                    where vehicle.UserId == currentUserId && !idsVehiclesUserHasAccess.Contains(vehicle.Id)
+                    join makeAuto in _makeAutoRepository.GetAll() on vehicle.IdMakeAuto equals makeAuto.Id into make
+                    from makeOrDefault in make.DefaultIfEmpty()
+                    join modelAuto in _modelAutoRepository.GetAll() on vehicle.IdModelAuto equals modelAuto.Id into model
+                    from modelOrDefault in model.DefaultIfEmpty()
+                    select new VehicleDto()
+                    {
+                        Id = vehicle.Id,
+                        UserId = vehicle.UserId,
+                        TenantId = vehicle.TenantId,
+                        ChassisNo = vehicle.ChassisNo,
+                        ProductionYear = vehicle.ProductionYear,
+                        RegistrationNumber = vehicle.RegistrationNumber,
+                        Title = vehicle.Title,
+                        IdMakeAuto = vehicle.IdMakeAuto,
+                        IdModelAuto = vehicle.IdMakeAuto,
+                        MakeAuto = makeOrDefault.Name,
+                        ModelAuto = modelOrDefault.Name
+                    })
                 .ToListAsync();
 
             listOfVehicles = listOfVehicles.WhereIf(!input.Filter.IsNullOrWhiteSpace(),
@@ -97,7 +138,7 @@ namespace MvManagement.Vehicles
             return new PagedResultEnumerableDto<VehicleDto>(listOfVehicles, input).Get();
         }
 
-        public async Task<long> CreateVehicleAsync(VehicleDto input)
+        public async Task<long> CreateVehicleAsync(VehicleCreateDto input)
         {
             if (input.ProductionYear < 1886 || input.ProductionYear > DateTime.Today.Year)
             {
@@ -109,6 +150,13 @@ namespace MvManagement.Vehicles
             }
 
             var entity = ObjectMapper.Map<Vehicle>(input);
+
+            if (input.TenantId == null)
+            {
+                entity.UserId = AbpSession.UserId;
+                entity.TenantId = 1; // default tenant
+            }
+
             var vehicleId =  await _vehicleRepository.InsertAndGetIdAsync(entity);
 
             await CurrentUnitOfWork.SaveChangesAsync();

@@ -17,6 +17,7 @@ namespace MvManagement
         {
             configuration.CreateMap<Vehicle, VehicleDto>();
             configuration.CreateMap<VehicleDto, Vehicle>();
+            configuration.CreateMap<VehicleCreateDto, Vehicle>();
 
             configuration.CreateMap<InsuranceDocument, InsuranceDocumentDto>();
             configuration.CreateMap<InsuranceDocumentDto, InsuranceDocument>();

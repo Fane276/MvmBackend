@@ -1939,6 +1939,14 @@ namespace MvManagement.Migrations
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("IdMakeAuto")
+                        .HasColumnType("int")
+                        .HasColumnName("IdMakeAuto");
+
+                    b.Property<int?>("IdModelAuto")
+                        .HasColumnType("int")
+                        .HasColumnName("IdModelAuto");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -1948,12 +1956,18 @@ namespace MvManagement.Migrations
                     b.Property<long?>("LastModifierUserId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("OtherAutoMake")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OtherAutoModel")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("ProductionYear")
                         .HasColumnType("int");
 
                     b.Property<string>("RegistrationNumber")
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)")
+                        .HasMaxLength(7)
+                        .HasColumnType("nvarchar(7)")
                         .HasColumnName("RegistrationNumber");
 
                     b.Property<int?>("TenantId")
@@ -1969,6 +1983,10 @@ namespace MvManagement.Migrations
                         .HasColumnName("UserId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IdMakeAuto");
+
+                    b.HasIndex("IdModelAuto");
 
                     b.HasIndex("UserId");
 
@@ -2429,9 +2447,21 @@ namespace MvManagement.Migrations
 
             modelBuilder.Entity("MvManagement.VehicleData.Vehicle", b =>
                 {
+                    b.HasOne("Catalogue.Auto.MakeAuto", "MakeAuto")
+                        .WithMany()
+                        .HasForeignKey("IdMakeAuto");
+
+                    b.HasOne("Catalogue.Auto.ModelAuto", "ModelAuto")
+                        .WithMany()
+                        .HasForeignKey("IdModelAuto");
+
                     b.HasOne("MvManagement.Authorization.Users.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
+
+                    b.Navigation("MakeAuto");
+
+                    b.Navigation("ModelAuto");
 
                     b.Navigation("User");
                 });
