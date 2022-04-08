@@ -3,6 +3,7 @@ using System.Security.Authentication;
 using System.Threading.Tasks;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
+using Abp.Castle.Logging.Log4Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MvManagement.Controllers;
@@ -49,14 +50,14 @@ namespace MvManagement.Web.Host.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AbpActionResultWrapper<PagedResultDto<InsuranceDocumentDto>>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AbpActionResultWrapper<InsuranceResultDto>))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
-        public async Task<IActionResult> GetCurrentUserPersonalVehiclesAsync([FromQuery] VehiclesPagedResultRequestDto input)
+        public async Task<IActionResult> GetInsuranceStatusAsync([FromQuery] long idVehicle)
         {
             try
             {
-                var documents = await _insuranceAppService.GetIsurancesForVehicleAsync(input);
+                var documents = await _insuranceAppService.GetIsurancesForVehicleAsync(idVehicle);
                 return Ok(documents);
             }
             catch (AuthenticationException ex)

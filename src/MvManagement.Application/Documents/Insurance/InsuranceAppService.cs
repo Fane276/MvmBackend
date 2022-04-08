@@ -45,21 +45,32 @@ namespace MvManagement.Documents.Insurance
             await _insuranceDocumentRepository.InsertAsync(entity);
         }
 
-        public async Task<PagedResultDto<InsuranceDocumentDto>> GetIsurancesForVehicleAsync(VehiclesPagedResultRequestDto input)
+        public async Task<InsuranceResultDto> GetIsurancesForVehicleAsync(long idVehicle)
         {
-            var hasPermission = await VehiclePermissionManager.CheckCurrentUserPermissionAsync(input.IdVehicle, VehiclePermissionNames.VehicleDocuments.Insurance.View);
+            var hasPermission = await VehiclePermissionManager.CheckCurrentUserPermissionAsync(idVehicle, VehiclePermissionNames.VehicleDocuments.Insurance.View);
 
             if (!hasPermission)
             {
                 throw new UserFriendlyException($"Not authorized, {VehiclePermissionNames.VehicleDocuments.Insurance.View} is missing");
             }
 
-            var insuranceList = await _insuranceDocumentRepository.GetAll()
-                .Where(d => d.IdVehicle == input.IdVehicle)
+            var rcaInsurance = await _insuranceDocumentRepository.GetAll()
+                .Where(d => d.IdVehicle == idVehicle && d.InsuranceType == InsuranceType.Rca)
                 .Select(d => ObjectMapper.Map<InsuranceDocumentDto>(d))
-                .ToListAsync();
+                .FirstOrDefaultAsync();
 
-            return new PagedResultEnumerableDto<InsuranceDocumentDto>(insuranceList, input).Get();
+            var cascoInsurance = await _insuranceDocumentRepository.GetAll()
+                .Where(d => d.IdVehicle == idVehicle && d.InsuranceType == InsuranceType.Casco)
+                .Select(d => ObjectMapper.Map<InsuranceDocumentDto>(d))
+                .FirstOrDefaultAsync();
+
+            var insuranceResult = new InsuranceResultDto()
+            {
+                Rca = rcaInsurance,
+                Casco = cascoInsurance
+            };
+
+            return insuranceResult;
         }
     }
 }

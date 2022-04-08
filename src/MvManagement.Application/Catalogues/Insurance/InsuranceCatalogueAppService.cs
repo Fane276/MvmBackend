@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Abp.Application.Services.Dto;
 using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
@@ -19,14 +21,15 @@ namespace MvManagement.Catalogues.Insurance
             _insuranceCompanyRepository = insuranceCompanyRepository;
         }
 
-        public async Task<List<SelectListItem>> GetInsuranceCompanies(string filter)
+        public async Task<ListResultDto<SelectListItem>> GetInsuranceCompanies(string q)
         {
             var insuranceCompanies = await _insuranceCompanyRepository.GetAll()
                 .Select(c=>new SelectListItem(){Text = c.Name, Value = c.Id.ToString()})
                 .ToListAsync();
-            return insuranceCompanies
-                .WhereIf(!filter.IsNullOrWhiteSpace(), c => c.Text.Contains(filter))
+            var companies = insuranceCompanies
+                .WhereIf(!q.IsNullOrWhiteSpace(), c => c.Text.Contains(q, StringComparison.InvariantCultureIgnoreCase))
                 .ToList();
+            return new ListResultDto<SelectListItem>(companies);
         }
     }
 }
