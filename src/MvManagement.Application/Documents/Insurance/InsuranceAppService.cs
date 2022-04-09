@@ -45,7 +45,7 @@ namespace MvManagement.Documents.Insurance
             await _insuranceDocumentRepository.InsertAsync(entity);
         }
 
-        public async Task<InsuranceResultDto> GetIsurancesForVehicleAsync(long idVehicle)
+        public async Task<InsuranceResultDto> GetInsurancesForVehicleAsync(long idVehicle)
         {
             var hasPermission = await VehiclePermissionManager.CheckCurrentUserPermissionAsync(idVehicle, VehiclePermissionNames.VehicleDocuments.Insurance.View);
 
@@ -71,6 +71,39 @@ namespace MvManagement.Documents.Insurance
             };
 
             return insuranceResult;
+        }
+
+        public async Task<InsuranceIdsResultDto> GetInsuranceIdsForVehicleAsync(long idVehicle)
+        {
+            var hasPermission = await VehiclePermissionManager.CheckCurrentUserPermissionAsync(idVehicle, VehiclePermissionNames.VehicleDocuments.Insurance.View);
+
+            if (!hasPermission)
+            {
+                throw new UserFriendlyException($"Not authorized, {VehiclePermissionNames.VehicleDocuments.Insurance.View} is missing");
+            }
+
+            var rcaInsurance = await _insuranceDocumentRepository.GetAll()
+                .Where(d => d.IdVehicle == idVehicle && d.InsuranceType == InsuranceType.Rca)
+                .Select(d => ObjectMapper.Map<InsuranceDocumentDto>(d))
+                .FirstOrDefaultAsync();
+
+            var cascoInsurance = await _insuranceDocumentRepository.GetAll()
+                .Where(d => d.IdVehicle == idVehicle && d.InsuranceType == InsuranceType.Casco)
+                .Select(d => ObjectMapper.Map<InsuranceDocumentDto>(d))
+                .FirstOrDefaultAsync();
+
+            var insuranceResult = new InsuranceIdsResultDto()
+            {
+                RcaId = rcaInsurance?.Id,
+                CascoId = cascoInsurance?.Id
+            };
+
+            return insuranceResult;
+        }
+
+        public async Task DeleteInsurance(long idInsurance)
+        {
+            await _insuranceDocumentRepository.DeleteAsync(d => d.Id == idInsurance);
         }
     }
 }

@@ -8,6 +8,8 @@ namespace MvManagement.Documents.Insurance
     public interface IInsuranceAppService
     {
         Task SaveInsuranceAsync(InsuranceDocumentDto document);
-        Task<InsuranceResultDto> GetIsurancesForVehicleAsync(long idVehicle);
+        Task<InsuranceResultDto> GetInsurancesForVehicleAsync(long idVehicle);
+        Task<InsuranceIdsResultDto> GetInsuranceIdsForVehicleAsync(long idVehicle);
+        Task DeleteInsurance(long idInsurance);
     }
 }

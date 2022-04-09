@@ -57,8 +57,50 @@ namespace MvManagement.Web.Host.Controllers
         {
             try
             {
-                var documents = await _insuranceAppService.GetIsurancesForVehicleAsync(idVehicle);
+                var documents = await _insuranceAppService.GetInsurancesForVehicleAsync(idVehicle);
                 return Ok(documents);
+            }
+            catch (AuthenticationException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AbpActionResultWrapper<InsuranceIdsResultDto>))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        public async Task<IActionResult> GetInsuranceIdsAsync([FromQuery] long idVehicle)
+        {
+            try
+            {
+                var documents = await _insuranceAppService.GetInsuranceIdsForVehicleAsync(idVehicle);
+                return Ok(documents);
+            }
+            catch (AuthenticationException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AbpActionResultWrapper<object>))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        public async Task<IActionResult> DeleteInsuranceAsync([FromBody] EntityDto<long> input)
+        {
+            try
+            {
+                await _insuranceAppService.DeleteInsurance(input.Id);
+                return Ok();
             }
             catch (AuthenticationException ex)
             {
