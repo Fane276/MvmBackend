@@ -11,5 +11,6 @@ namespace MvManagement.Documents.Insurance
         Task<InsuranceResultDto> GetInsurancesForVehicleAsync(long idVehicle);
         Task<InsuranceIdsResultDto> GetInsuranceIdsForVehicleAsync(long idVehicle);
         Task DeleteInsurance(long idInsurance);
+        Task EditInsuranceAsync(InsuranceDocumentDto document);
     }
 }

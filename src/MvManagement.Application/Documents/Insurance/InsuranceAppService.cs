@@ -105,5 +105,19 @@ namespace MvManagement.Documents.Insurance
         {
             await _insuranceDocumentRepository.DeleteAsync(d => d.Id == idInsurance);
         }
+
+        public async Task EditInsuranceAsync(InsuranceDocumentDto document)
+        {
+            var hasPermission = await VehiclePermissionManager.CheckCurrentUserPermissionAsync(document.IdVehicle, VehiclePermissionNames.VehicleDocuments.Insurance.Edit);
+
+            if (!hasPermission)
+            {
+                throw new UserFriendlyException($"Not authorized, {VehiclePermissionNames.VehicleDocuments.Insurance.Edit} is missing");
+            }
+
+            var entity = ObjectMapper.Map<InsuranceDocument>(document);
+
+            await _insuranceDocumentRepository.UpdateAsync(entity);
+        }
     }
 }
