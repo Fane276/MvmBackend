@@ -1,8 +1,15 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Authentication;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Abp;
+using Abp.Application.Services.Dto;
 using Abp.Configuration;
 using Abp.Zero.Configuration;
 using MvManagement.Authorization.Accounts.Dto;
 using MvManagement.Authorization.Users;
+using MvManagement.Roles.Dto;
 
 namespace MvManagement.Authorization.Accounts
 {
@@ -52,6 +59,24 @@ namespace MvManagement.Authorization.Accounts
             {
                 CanLogin = user.IsActive && (user.IsEmailConfirmed || !isEmailConfirmationRequiredForLogin)
             };
+        }
+
+        public async Task<ListResultDto<PermissionDto>> GetCurrentUserPermissionsAsync()
+        {
+            var userId = AbpSession.UserId;
+            if (userId == null)
+            {
+                return new ListResultDto<PermissionDto>();
+            }
+
+            var user =await UserManager.GetUserAsync(new UserIdentifier(AbpSession.TenantId,(long)userId));
+
+            var permissions = await UserManager.GetGrantedPermissionsAsync(user);
+
+
+            return await Task.FromResult(new ListResultDto<PermissionDto>(
+                ObjectMapper.Map<List<PermissionDto>>(permissions).OrderBy(p => p.DisplayName).ToList()
+            ));
         }
     }
 }
