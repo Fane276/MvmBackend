@@ -5,6 +5,7 @@ using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MvManagement.Chart;
 using MvManagement.Controllers;
 using MvManagement.FuelManagement;
 using MvManagement.FuelManagement.Dto;
@@ -73,6 +74,27 @@ namespace MvManagement.Web.Host.Controllers
             {
                 await _fuelManagementAppService.DeleteRefillAsync(input.Id);
                 return Ok();
+            }
+            catch (AuthenticationException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AbpActionResultWrapper<BarChart>))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        public async Task<IActionResult> GetPricePerLastWeekAsync(long idVehicle)
+        {
+            try
+            {
+                var result = await _fuelManagementAppService.GetPricePerLastWeekAsync(idVehicle);
+                return Ok(result);
             }
             catch (AuthenticationException ex)
             {

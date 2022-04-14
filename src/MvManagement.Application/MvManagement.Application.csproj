@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <VersionPrefix>1.0.0.0</VersionPrefix>
     <TargetFramework>net6.0</TargetFramework>
@@ -15,5 +15,8 @@
     <ProjectReference Include="..\..\modules\catalogue\Catalogue.Auto\Catalogue.Auto.csproj" />
     <ProjectReference Include="..\..\modules\catalogue\Catalogue.InsuranceCompany\Catalogue.InsuranceCompany.csproj" />
     <ProjectReference Include="..\MvManagement.Core\MvManagement.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Chart\" />
   </ItemGroup>
 </Project>
