@@ -11,6 +11,7 @@ namespace MvManagement.FuelManagement
         Task<PagedResultDto<FuelRefillDto>> GetVehicleRefillsAsync(VehiclesPagedResultRequestDto input);
         Task<long> InsertRefillAsync(InputRefillDto input);
         Task DeleteRefillAsync(long idRefill);
-        Task<BarChart> GetPricePerLastWeekAsync(long idVehicle, int numberDays = 7);
+        Task<ChartResult> GetPricePerLastWeekAsync(long idVehicle, int numberDays = 7);
+        Task<ChartResult> GetCostPerVehicleAsync(int maxNumberVehicle = 10);
     }
 }

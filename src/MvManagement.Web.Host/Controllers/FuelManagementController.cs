@@ -86,7 +86,7 @@ namespace MvManagement.Web.Host.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AbpActionResultWrapper<BarChart>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AbpActionResultWrapper<ChartResult>))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
         public async Task<IActionResult> GetPricePerLastWeekAsync(long idVehicle)
@@ -94,6 +94,26 @@ namespace MvManagement.Web.Host.Controllers
             try
             {
                 var result = await _fuelManagementAppService.GetPricePerLastWeekAsync(idVehicle);
+                return Ok(result);
+            }
+            catch (AuthenticationException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AbpActionResultWrapper<ChartResult>))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        public async Task<IActionResult> GetCostPerVehicleAsync()
+        {
+            try
+            {
+                var result = await _fuelManagementAppService.GetCostPerVehicleAsync();
                 return Ok(result);
             }
             catch (AuthenticationException ex)
