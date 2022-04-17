@@ -15,6 +15,12 @@
     <EmbeddedResource Include="Localization\SourceFiles\*.xml" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Net\Emailing\EmailTemplates\default.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Net\Emailing\EmailTemplates\default.html" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="..\..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
   <ItemGroup>
@@ -26,5 +32,6 @@
     <ProjectReference Include="..\..\modules\catalogue\Catalogue.Auto\Catalogue.Auto.csproj" />
     <ProjectReference Include="..\..\modules\catalogue\Catalogue.Documents\Catalogue.Documents.csproj" />
     <ProjectReference Include="..\..\modules\catalogue\Catalogue.InsuranceCompany\Catalogue.InsuranceCompany.csproj" />
+    <ProjectReference Include="..\..\modules\other\Abp.SendGrid\Abp.SendGrid.csproj" />
   </ItemGroup>
 </Project>

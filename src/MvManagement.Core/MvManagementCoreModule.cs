@@ -1,7 +1,11 @@
-﻿using Abp.Localization;
+﻿using Abp.Configuration.Startup;
+using Abp.Dependency;
+using Abp.Localization;
 using Abp.Modules;
+using Abp.Net.Mail;
 using Abp.Reflection.Extensions;
 using Abp.Runtime.Security;
+using Abp.SendGrid;
 using Abp.Timing;
 using Abp.Zero;
 using Abp.Zero.Configuration;
@@ -14,7 +18,9 @@ using MvManagement.Timing;
 
 namespace MvManagement
 {
-    [DependsOn(typeof(AbpZeroCoreModule))]
+    [DependsOn(
+        typeof(AbpZeroCoreModule),
+        typeof(AbpSendGridModule))]
     public class MvManagementCoreModule : AbpModule
     {
         public override void PreInitialize()
@@ -37,7 +43,13 @@ namespace MvManagement
             Configuration.Settings.Providers.Add<AppSettingProvider>();
             
             Configuration.Localization.Languages.Add(new LanguageInfo("fa", "فارسی", "famfamfam-flags ir"));
-            
+
+
+            Configuration.Modules.AbpSendGrid().ApiKey = MvManagementConsts.SendGridApiKey;
+
+            Configuration.ReplaceService<ISendGridSmtpBuilder, DefaultSendGridSmtpBuilder>(DependencyLifeStyle.Transient);
+            Configuration.ReplaceService<IEmailSender, SendGridEmailSender>(DependencyLifeStyle.Transient);
+
             Configuration.Settings.SettingEncryptionConfiguration.DefaultPassPhrase = MvManagementConsts.DefaultPassPhrase;
             SimpleStringCipher.DefaultPassPhrase = MvManagementConsts.DefaultPassPhrase;
         }

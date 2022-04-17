@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<localizationDictionary culture="ro">
+	<texts>
+		<text name="SendGrid" value="SendGrid" />
+		<text name="ApiKey" value="ApiKey" />
+	</texts>
+</localizationDictionary>

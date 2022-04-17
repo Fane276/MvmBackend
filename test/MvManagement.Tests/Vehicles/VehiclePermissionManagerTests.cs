@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Abp;
 using Abp.Domain.Repositories;
+using MvManagement.Tests.Sessions;
 using MvManagement.VehicleData;
 using MvManagement.VehicleData.VehicleAccess;
 using MvManagement.VehicleData.VehicleAccessUtils;
@@ -136,6 +138,18 @@ namespace MvManagement.Tests.Vehicles
             ));
 
             var hasPermission = await _vehiclePermissionManager.CheckPermissionAsync(1, 1, VehiclePermissionNames.VehicleInfo.View);
+
+            hasPermission.ShouldBeTrue();
+
+        }
+        [Fact]
+        public async Task AsignRoleToUser_Test()
+        {
+            await Assert.ThrowsAsync<NullReferenceException>(() => _vehiclePermissionManager.AsignUserRoleAsync(1, "Does not exist",1));
+            
+            await _vehiclePermissionManager.AsignUserRoleAsync(1, "Owner", 1);
+
+            var hasPermission = await _vehiclePermissionManager.CheckPermissionAsync(1, 1, VehiclePermissionNames.VehicleInfo.Edit);
 
             hasPermission.ShouldBeTrue();
 

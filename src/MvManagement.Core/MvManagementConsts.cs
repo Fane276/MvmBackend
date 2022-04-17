@@ -9,6 +9,7 @@ namespace MvManagement
         public const string ConnectionStringName = "Default";
 
         public const bool MultiTenancyEnabled = true;
+        public const string SendGridApiKey = "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";
 
 
         /// <summary>

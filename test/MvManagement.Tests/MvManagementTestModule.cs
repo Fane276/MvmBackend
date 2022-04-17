@@ -6,6 +6,7 @@ using Abp.Dependency;
 using Abp.Modules;
 using Abp.Configuration.Startup;
 using Abp.Net.Mail;
+using Abp.SendGrid;
 using Abp.TestBase;
 using Abp.Zero.Configuration;
 using Abp.Zero.EntityFrameworkCore;
@@ -42,7 +43,11 @@ namespace MvManagement.Tests
 
             RegisterFakeService<AbpZeroDbMigrator<MvManagementDbContext>>();
 
-            Configuration.ReplaceService<IEmailSender, NullEmailSender>(DependencyLifeStyle.Transient);
+
+            Configuration.Modules.AbpSendGrid().ApiKey = MvManagementConsts.SendGridApiKey;
+
+            Configuration.ReplaceService<ISendGridSmtpBuilder, DefaultSendGridSmtpBuilder>(DependencyLifeStyle.Transient);
+            Configuration.ReplaceService<IEmailSender, SendGridEmailSender>(DependencyLifeStyle.Transient);
         }
 
         public override void Initialize()
