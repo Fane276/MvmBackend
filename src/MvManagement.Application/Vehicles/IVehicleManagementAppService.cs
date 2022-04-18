@@ -31,5 +31,7 @@ namespace MvManagement.Vehicles
         /// Delete the vehicle with specified id
         /// </summary>
         Task DeleteVehicleAsync(long idVehicle);
+
+        Task<VehicleDto> GetVehicleByIdAsync(long idVehicle);
     }
 }

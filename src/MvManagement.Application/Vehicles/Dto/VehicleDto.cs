@@ -1,4 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
+using Catalogue.Auto;
 
 namespace MvManagement.Vehicles.Dto
 {
@@ -14,5 +15,6 @@ namespace MvManagement.Vehicles.Dto
         public string MakeAuto { get; set; }
         public int? IdModelAuto { get; set; }
         public string ModelAuto { get; set; }
+        public AutoTypeCategoryMake VehicleType { get; set; }
     }
 }

@@ -30,6 +30,7 @@ namespace MvManagement.Vehicles
         private readonly IRepository<VehiclePermission, long> _vehiclePermissionRepository;
         private readonly IRepository<MakeAuto> _makeAutoRepository;
         private readonly IRepository<ModelAuto> _modelAutoRepository;
+        private readonly IRepository<MakeCategoryAuto> _makeCategoryAutoRepository;
 
 
         public VehicleManagementAppService(
@@ -38,13 +39,15 @@ namespace MvManagement.Vehicles
             IRepository<VehicleRoleUser, long> vehicleRoleUserRepository, 
             IRepository<VehiclePermission, long> vehiclePermissionRepository, 
             IRepository<MakeAuto> makeAutoRepository,
-            IRepository<ModelAuto> modelAutoRepository) : base(vehiclePermissionManager)
+            IRepository<ModelAuto> modelAutoRepository, 
+            IRepository<MakeCategoryAuto> makeCategoryAutoRepository) : base(vehiclePermissionManager)
         {
             _vehicleRepository = vehicleRepository;
             _vehicleRoleUserRepository = vehicleRoleUserRepository;
             _vehiclePermissionRepository = vehiclePermissionRepository;
             _makeAutoRepository = makeAutoRepository;
             _modelAutoRepository = modelAutoRepository;
+            _makeCategoryAutoRepository = makeCategoryAutoRepository;
         }
 
         public async Task<PagedResultDto<VehicleDto>> GetCurrentUserPersonalVehiclesAsync(PagedSortedAndFilteredInputDto input)
@@ -166,6 +169,34 @@ namespace MvManagement.Vehicles
             var entity = ObjectMapper.Map<Vehicle>(input);
 
             await _vehicleRepository.UpdateAsync(entity);
+        }
+
+        public async Task<VehicleDto> GetVehicleByIdAsync(long idVehicle)
+        {
+            var vehicleDto = await (from vehicle in _vehicleRepository.GetAll()
+                where vehicle.Id == idVehicle
+                join makeAuto in _makeAutoRepository.GetAll() on vehicle.IdMakeAuto equals makeAuto.Id into make
+                from makeOrDefault in make.DefaultIfEmpty()
+                join makeCategoryAuto in _makeCategoryAutoRepository.GetAll() on vehicle.IdMakeAuto equals makeCategoryAuto.IdMake into makeCategory
+                from makeCategoryOrDefault in makeCategory.DefaultIfEmpty()
+                join modelAuto in _modelAutoRepository.GetAll() on vehicle.IdModelAuto equals modelAuto.Id into model
+                from modelOrDefault in model.DefaultIfEmpty()
+                select new VehicleDto()
+                {
+                    Id = vehicle.Id,
+                    UserId = vehicle.UserId,
+                    TenantId = vehicle.TenantId,
+                    ChassisNo = vehicle.ChassisNo,
+                    ProductionYear = vehicle.ProductionYear,
+                    RegistrationNumber = vehicle.RegistrationNumber,
+                    Title = vehicle.Title,
+                    IdMakeAuto = vehicle.IdMakeAuto,
+                    IdModelAuto = vehicle.IdMakeAuto,
+                    MakeAuto = makeOrDefault.Name,
+                    ModelAuto = modelOrDefault.Name,
+                    VehicleType = makeCategoryOrDefault.Category
+                }).FirstOrDefaultAsync();
+            return vehicleDto;
         }
 
         public async Task DeleteVehicleAsync(long idVehicle)

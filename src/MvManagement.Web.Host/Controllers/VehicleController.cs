@@ -86,6 +86,27 @@ namespace MvManagement.Web.Host.Controllers
             }
         }
 
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AbpActionResultWrapper<VehicleDto>))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        public async Task<IActionResult> GetVehicleByIdAsync(long idVehicle)
+        {
+            try
+            {
+                var vehicle = await _vehicleManagementAppService.GetVehicleByIdAsync(idVehicle);
+                return Ok(vehicle);
+            }
+            catch (AuthenticationException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AbpActionResultWrapper<object>))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
