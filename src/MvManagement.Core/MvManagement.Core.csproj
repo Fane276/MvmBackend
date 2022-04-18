@@ -34,4 +34,7 @@
     <ProjectReference Include="..\..\modules\catalogue\Catalogue.InsuranceCompany\Catalogue.InsuranceCompany.csproj" />
     <ProjectReference Include="..\..\modules\other\Abp.SendGrid\Abp.SendGrid.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Documents\UserDocuments\" />
+  </ItemGroup>
 </Project>

@@ -57,7 +57,7 @@ namespace MvManagement.Documents.Insurance
 
             await _insuranceDocumentRepository.InsertAsync(entity);
 
-            await SendEmailAdaugareDocumentAsync("rca");
+            //await SendEmailAdaugareDocumentAsync("rca");
         }
 
         public async Task<InsuranceResultDto> GetInsurancesForVehicleAsync(long idVehicle)

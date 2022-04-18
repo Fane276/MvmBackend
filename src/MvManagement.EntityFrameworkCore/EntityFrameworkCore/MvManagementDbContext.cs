@@ -8,6 +8,7 @@ using MvManagement.Authorization.Users;
 using MvManagement.Documents.Insurance;
 using MvManagement.Documents.PeriodicalDocuments;
 using MvManagement.Documents.StorageDocuments;
+using MvManagement.Documents.UserDocuments;
 using MvManagement.FuelManagement;
 using MvManagement.MultiTenancy;
 using MvManagement.VehicleData;
@@ -42,6 +43,7 @@ namespace MvManagement.EntityFrameworkCore
         public DbSet<InsuranceDocument> InsuranceDocument { get; set; }
         public DbSet<PeriodicalDocument> PeriodicalDocument { get; set; }
         public DbSet<StorageDocument> StorageDocument { get; set; }
+        public DbSet<UserDocument> UserDocument { get; set; }
 
         #endregion
         public DbSet<FuelRefill> FuelRefill { get; set; }

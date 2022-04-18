@@ -8,6 +8,8 @@ import io
 import cv2
 import pytesseract
 
+from documentScann import ImagePreProcessing
+
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -18,8 +20,9 @@ def home(request: Request):
 
 
 def read_img(img):
- text = pytesseract.image_to_string(img, lang='ron', config='--psm 1')
- return(text)
+    img = ImagePreProcessing(img)
+    text = pytesseract.image_to_string(img, lang='ron', config='--psm 1')
+    return(text)
 
 #  , file: bytes = File(...)
 

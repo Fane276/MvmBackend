@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 import pytesseract
+import datefinder
+import re
 
 # aling the image 
 def rectify(h):
@@ -26,7 +28,8 @@ def gray_scale(image):
   return image;
 
 def canny_edge_detection(image):
-  blurred_image= cv2.GaussianBlur(image, (5,5), 0)
+  blurred_image= cv2.GaussianBlur(image, (7,7), 0)
+  # blurred_image= cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 85, 15);
   edges = cv2.Canny(blurred_image, 0, 50)
   return edges
 
@@ -44,35 +47,102 @@ def find_contours(image):
 
 def draw_contours(orig_image, image, target):
   approx = rectify(target)
-  pts2 = np.float32([[0,0], [800,0], [800,800], [0,800]])
+  pts2 = np.float32([[0,0], [1000,0], [1000,800], [0,800]])
 
   M = cv2.getPerspectiveTransform(approx, pts2)
-  result = cv2.warpPerspective(image, M, (800,800))
+  result = cv2.warpPerspective(image, M, (1000,800))
 
-  cv2.drawContours(image, [target], -1, (0,255,0), 2)
+  cv2.drawContours(orig_image, [target], -1, (0,255,0), 2)
   result = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
   return result
 
-# image = cv2.imread("Data/IMG_3216.JPG") # poza asigurare
+def ImagePreProcessing(image):
+  image = resize_image(image, 900, 1600)
+  # image = resize_image(image, 1400, 900)
+  orig = image.copy()
+  # cv2.imshow("Original", orig)
+
+  gray = gray_scale(image)
+  # cv2.imshow("Gray", gray)
+
+  edges = canny_edge_detection(gray)
+
+  target = find_contours(edges)
+  output= draw_contours(orig, image, target)
+  # text = pytesseract.image_to_string(output, lang='ron')
+
+  return output
+
+def findDateInText(text):
+  # a regular expression pattern to match dates
+  pattern = "\d{2}[./-]\d{2}[./-]\d{4}"
+
+  
+  # find all the strings that match the pattern
+  dates = re.findall(pattern, text)
+
+  for date in dates:
+      return date
+
+def PostProcessing(text):
+  text = text.split('\n')
+  textPerLines =[]
+  for line in text:
+    if not line.isspace():
+        textPerLines.append(line)
+  obj={"FirstName":'', "LastName":'',"FromDate": '', 'ToDate': ''}
+  # obj["FromDate"] = textPerLines[5]
+  obj["LastName"] = ' '.join(textPerLines[2].split(" ")[1:])
+  obj["FirstName"] = ' '.join(textPerLines[3].split(" ")[1:])
+  obj["FromDate"] = findDateInText(textPerLines[5])
+  obj["ToDate"] = findDateInText(textPerLines[6])
+  return obj
+
+
+# image = cv2.imread("Data/IMG_3216.JPG") # poza talon 1
+# image = cv2.imread("Data/IMG_4444.JPG") # poza talon 2
+# image = cv2.imread("Data/IMG_4445.JPG") # poza talon 3
+# image = cv2.imread("Data/IMG_4446.JPG") # poza talon 4
+# image = cv2.imread("Data/IMG_4447.JPG") # poza talon 5
 # image = cv2.imread("Data/IMG_3513.jpg") # poza buletin
-image = cv2.imread("Data/buletin 2.JPG") # poza buletin 2
+# image = cv2.imread("Data/buletin 2.JPG") # poza buletin 2
+# image = cv2.imread("Data/buletin moni 1.jpeg") # poza buletin 3
+# image = cv2.imread("Data/buletin moni 2.jpeg") # poza buletin 4
 # image = cv2.imread("Data/IMG_3524.PNG") # ss asigurare
 # image = cv2.imread("Data/IMG_4425.JPG") # bon
-iamge = resize_image(image, 1500, 800)
-orig = image.copy()
-cv2.imshow("Original", orig)
+# image = cv2.imread("Data/IMG_4448.JPG") # bon 2
+image = cv2.imread("Data/IMG_4453.JPG") # carnet
 
-gray = gray_scale(image)
-cv2.imshow("Gray", gray)
+# # scale_percent = 60 # percent of original size
+# # width = int(image.shape[1] * scale_percent / 100)
+# # height = int(image.shape[0] * scale_percent / 100)
+# # image = resize_image(image, width, height)
 
-edges = canny_edge_detection(gray)
-cv2.imshow("Edges", edges)
+# image = resize_image(image, 900, 1600)
+# # image = resize_image(image, 1400, 900)
+# orig = image.copy()
+# # cv2.imshow("Original", orig)
 
-target = find_contours(edges)
-output= draw_contours(orig, image, target)
-text = pytesseract.image_to_string(output, lang='ron', config='--psm 1 ')
+# gray = gray_scale(image)
+# # cv2.imshow("Gray", gray)
 
-print("Text Detected: \n" + text)
-cv2.imshow("Output", output)
+# edges = canny_edge_detection(gray)
+# cv2.imshow("Edges", edges)
 
-cv2.waitKey(0)
+# target = find_contours(edges)
+# output= draw_contours(orig, image, target)
+# text = pytesseract.image_to_string(output, lang='ron')
+
+# print("Text Detected: \n" + text)
+# cv2.imshow("Output", output)
+# cv2.imshow("orig", orig)
+
+# cv2.waitKey(0)
+
+output = ImagePreProcessing(image)
+text = pytesseract.image_to_string(output, lang='ron')
+
+print(text)
+
+obj = PostProcessing(text)
+print(obj)

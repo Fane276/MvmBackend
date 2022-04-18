@@ -5,6 +5,8 @@ using AutoMapper;
 using MvManagement.Authorization.Roles;
 using MvManagement.Documents.Insurance;
 using MvManagement.Documents.Insurance.Dto;
+using MvManagement.Documents.UserDocuments;
+using MvManagement.Documents.UserDocuments.Dto;
 using MvManagement.FuelManagement;
 using MvManagement.FuelManagement.Dto;
 using MvManagement.Roles.Dto;
@@ -23,6 +25,9 @@ namespace MvManagement
 
             configuration.CreateMap<InsuranceDocument, InsuranceDocumentDto>();
             configuration.CreateMap<InsuranceDocumentDto, InsuranceDocument>();
+            configuration.CreateMap<UserDocumentDto, UserDocument>();
+            configuration.CreateMap<UserDocumentInputDto, UserDocument>();
+            configuration.CreateMap<UserDocument, UserDocumentDto>();
 
             configuration.CreateMap<InputRefillDto, FuelRefill>();
             configuration.CreateMap<FuelRefill, FuelRefillDto>();

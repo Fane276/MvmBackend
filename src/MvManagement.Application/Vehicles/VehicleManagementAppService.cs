@@ -144,10 +144,6 @@ namespace MvManagement.Vehicles
             {
                 throw new UserFriendlyException("Vehicle year is incorrect");
             }
-            if (input.ChassisNo.Length != 17)
-            {
-                throw new InvalidDataException("Chassis no. is too long");
-            }
 
             var entity = ObjectMapper.Map<Vehicle>(input);
 
