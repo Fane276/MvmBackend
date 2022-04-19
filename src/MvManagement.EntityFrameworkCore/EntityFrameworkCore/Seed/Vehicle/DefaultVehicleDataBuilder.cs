@@ -36,8 +36,9 @@ namespace MvManagement.EntityFrameworkCore.Seed.Vehicle
                 var listOfTypes = new List<PeriodicalDocumentType>();
                 listOfTypes.Add(new PeriodicalDocumentType {Id = 1, Name = "PeriodicalDocument.Itp"});
                 listOfTypes.Add(new PeriodicalDocumentType {Id = 2, Name = "PeriodicalDocument.FireExtinguisher"});
-                listOfTypes.Add(new PeriodicalDocumentType {Id = 3, Name = "PeriodicalDocument.Rovienieta"});
-                listOfTypes.Add(new PeriodicalDocumentType {Id = 4, Name = "PeriodicalDocument.MedicalKit"});
+                listOfTypes.Add(new PeriodicalDocumentType {Id = 3, Name = "PeriodicalDocument.Rovinieta"});
+                listOfTypes.Add(new PeriodicalDocumentType {Id = 4, Name = "PeriodicalDocument.Vinieta"});
+                listOfTypes.Add(new PeriodicalDocumentType {Id = 5, Name = "PeriodicalDocument.MedicalKit"});
                 
 
                 _context.Database.ExecuteSqlRaw($"SET IDENTITY_INSERT cat.tblCatPeriodicalDocumentType ON");

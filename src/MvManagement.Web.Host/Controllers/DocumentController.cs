@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using MvManagement.Controllers;
 using MvManagement.Documents.Insurance;
 using MvManagement.Documents.Insurance.Dto;
+using MvManagement.Documents.PeriodicalDocuments;
+using MvManagement.Documents.PeriodicalDocuments.Dto;
 using MvManagement.Documents.UserDocuments;
 using MvManagement.Documents.UserDocuments.Dto;
 using MvManagement.Extensions.Dto.PageFilter;
@@ -25,11 +27,13 @@ namespace MvManagement.Web.Host.Controllers
     {
         private readonly IInsuranceAppService _insuranceAppService;
         private readonly IUserDocumentAppService _userDocumentAppService;
+        private readonly IPeriodicalDocumentAppService _periodicalDocumentAppService;
 
-        public DocumentController(IInsuranceAppService insuranceAppService, IUserDocumentAppService userDocumentAppService)
+        public DocumentController(IInsuranceAppService insuranceAppService, IUserDocumentAppService userDocumentAppService, IPeriodicalDocumentAppService periodicalDocumentAppService)
         {
             _insuranceAppService = insuranceAppService;
             _userDocumentAppService = userDocumentAppService;
+            _periodicalDocumentAppService = periodicalDocumentAppService;
         }
 
 
@@ -229,6 +233,110 @@ namespace MvManagement.Web.Host.Controllers
             try
             {
                 await _userDocumentAppService.DeleteUserDocumentAsync(input.Id);
+                return Ok();
+            }
+            catch (AuthenticationException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AbpActionResultWrapper<long>))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        public async Task<IActionResult> SavePeriodicalDocumentAsync(PeriodicalDocumentInput input)
+        {
+            try
+            {
+                var idDocument = await _periodicalDocumentAppService.AddPeriodicalDocumentAsync(input);
+                return Ok(idDocument);
+            }
+            catch (AuthenticationException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AbpActionResultWrapper<ListResultDto<PeriodicalDocumentDto>>))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        public async Task<IActionResult> GetPeriodicalDocumentsAsync(long idVehicle)
+        {
+            try
+            {
+                var documents = await _periodicalDocumentAppService.GetPeriodicalDocumentsAsync(idVehicle);
+                return Ok(documents);
+            }
+            catch (AuthenticationException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AbpActionResultWrapper<object>))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        public async Task<IActionResult> DeletePeriodicalDocumentAsync([FromBody] DeletePeriodicalDocumentInput input)
+        {
+            try
+            {
+                await _periodicalDocumentAppService.DeletePeriodicalDocumentAsync(input);
+                return Ok();
+            }
+            catch (AuthenticationException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AbpActionResultWrapper<PeriodicalDocumentDto>))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        public async Task<IActionResult> GetPeriodicalDocumentAsync(long idDocument)
+        {
+            try
+            {
+                var documents = await _periodicalDocumentAppService.GetPeriodicalDocumentAsync(idDocument);
+                return Ok(documents);
+            }
+            catch (AuthenticationException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AbpActionResultWrapper<object>))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        public async Task<IActionResult> UpdatePeriodicalDocumentAsync(PeriodicalDocumentDto input)
+        {
+            try
+            {
+                await _periodicalDocumentAppService.UpdatePeriodicalDocumentAsync(input);
                 return Ok();
             }
             catch (AuthenticationException ex)
