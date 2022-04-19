@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Abp.Application.Services.Dto;
+using MvManagement.Documents.Dto;
 using MvManagement.Documents.UserDocuments.Dto;
 
 namespace MvManagement.Documents.UserDocuments
@@ -11,5 +13,6 @@ namespace MvManagement.Documents.UserDocuments
         Task DeleteUserDocumentAsync(long idDocument);
         Task<UserDocumentDto> GetUserDocumentAsync(long idDocument);
         Task UpdateUserDocumentAsync(UserDocumentDto input);
+        Task<List<ExpiredDocumentDto>> GetExpiredUserDocumentsAsync();
     }
 }

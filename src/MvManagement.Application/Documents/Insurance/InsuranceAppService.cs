@@ -1,22 +1,22 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using Abp;
 using Abp.Application.Services;
-using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Net.Mail;
 using Abp.UI;
 using Microsoft.EntityFrameworkCore;
+using MvManagement.Documents.Dto;
 using MvManagement.Documents.Insurance.Dto;
-using MvManagement.Extensions.Dto.PageResult;
 using MvManagement.Net.Emailing;
 using MvManagement.VehicleData;
 using MvManagement.Vehicles;
-using MvManagement.Vehicles.Dto;
 
 namespace MvManagement.Documents.Insurance
 {
@@ -26,16 +26,19 @@ namespace MvManagement.Documents.Insurance
         private readonly IRepository<InsuranceDocument, long> _insuranceDocumentRepository;
         private readonly IEmailTemplateProvider _emailTemplateProvider;
         private readonly IEmailSender _emailSender;
+        private readonly IRepository<Vehicle, long> _vehicleRepository;
 
         public InsuranceAppService(
             IVehiclePermissionManager vehiclePermissionManager, 
             IRepository<InsuranceDocument, long> insuranceDocumentRepository, 
             IEmailTemplateProvider emailTemplateProvider,
-            IEmailSender emailSender) : base(vehiclePermissionManager)
+            IEmailSender emailSender, 
+            IRepository<Vehicle, long> vehicleRepository) : base(vehiclePermissionManager)
         {
             _insuranceDocumentRepository = insuranceDocumentRepository;
             _emailTemplateProvider = emailTemplateProvider;
             _emailSender = emailSender;
+            _vehicleRepository = vehicleRepository;
         }
         public async Task SaveInsuranceAsync(InsuranceDocumentDto document)
         {
@@ -175,6 +178,35 @@ namespace MvManagement.Documents.Insurance
                 $"<br /><div style='width: 100vw; max-width:680px;'><span style='float:left; margin-left:25px;'>{L("StatusulProiectului")}: <span style='height: 10px;width: 10px;border-radius: 50%;display: inline-block;background-color: {culoareStatus};'></span> <b>Ceva</b></span></div>");
             
             await ReplaceBodyAndSend(currentUser.EmailAddress, $"{L("ProiectDepus")}", emailTemplate, mailMessage);
+        }
+
+        public async Task<List<ExpiredDocumentDto>> GetExpiredInsuranceForAllUserVehiclesAsync()
+        {
+            var currentUserId = AbpSession.UserId;
+
+            if (currentUserId == null)
+            {
+                throw new AbpAuthorizationException("User not authenticated");
+            }
+
+            var vehcicleIds = await _vehicleRepository.GetAll()
+                .Where(vehicle => vehicle.UserId == currentUserId)
+                .Select(vehicle => vehicle.Id).ToListAsync();
+
+            var listOfDocuments = await (from document in _insuranceDocumentRepository.GetAll()
+                where vehcicleIds.Contains(document.IdVehicle) && document.ValidTo.CompareTo(DateTime.Today) < 0
+                join vehicle in _vehicleRepository.GetAll() on document.IdVehicle equals vehicle.Id
+                select new ExpiredDocumentDto
+                {
+                    Id = document.Id,
+                    Name = document.InsuranceType.ToString(),
+                    VehicleTitle = vehicle.Title,
+                    ValidTo = document.ValidTo,
+                    DocumentType = DocumentType.Insurance
+                })
+            .ToListAsync();
+
+            return listOfDocuments;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing.Printing;
 using System.Security.Authentication;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using Abp.Castle.Logging.Log4Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MvManagement.Controllers;
+using MvManagement.Documents.Dto;
 using MvManagement.Documents.Insurance;
 using MvManagement.Documents.Insurance.Dto;
 using MvManagement.Documents.PeriodicalDocuments;
@@ -348,5 +350,38 @@ namespace MvManagement.Web.Host.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+
+
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AbpActionResultWrapper<ListResultDto<ExpiredDocumentDto>>))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
+        public async Task<IActionResult> GetExpiredDocumentsAsync()
+        {
+            try
+            {
+                var expiredDocuments = new List<ExpiredDocumentDto>();
+
+                var isuranceExpired = await _insuranceAppService.GetExpiredInsuranceForAllUserVehiclesAsync();
+                expiredDocuments.AddRange(isuranceExpired);
+                var periodicalExpired = await _periodicalDocumentAppService.GetExpiredPeriodicalDocumentsAllUserVehiclesAsync();
+                expiredDocuments.AddRange(periodicalExpired);
+                var userDocumentsExpired = await _userDocumentAppService.GetExpiredUserDocumentsAsync();
+                expiredDocuments.AddRange(userDocumentsExpired);
+
+
+                return Ok(new ListResultDto<ExpiredDocumentDto>(expiredDocuments));
+            }
+            catch (AuthenticationException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+
     }
 }

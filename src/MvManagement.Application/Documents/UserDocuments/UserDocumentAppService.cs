@@ -1,13 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.UI;
 using Microsoft.EntityFrameworkCore;
+using MvManagement.Documents.Dto;
 using MvManagement.Documents.UserDocuments.Dto;
 using MvManagement.Extensions;
+using MvManagement.VehicleData;
 
 namespace MvManagement.Documents.UserDocuments
 {
@@ -73,6 +77,29 @@ namespace MvManagement.Documents.UserDocuments
         public async Task DeleteUserDocumentAsync(long idDocument)
         {
             await _userDocumentRepository.DeleteAsync(d => d.Id == idDocument);
+        }
+
+        public async Task<List<ExpiredDocumentDto>> GetExpiredUserDocumentsAsync()
+        {
+            var currentUserId = AbpSession.UserId;
+
+            if (currentUserId == null)
+            {
+                throw new AbpAuthorizationException("User not authenticated");
+            }
+
+            var listOfDocuments = await (from document in _userDocumentRepository.GetAll()
+                    where document.UserId == currentUserId && ((DateTime)document.ValidTo).CompareTo(DateTime.Today) < 0
+                    select new ExpiredDocumentDto
+                    {
+                        Id = document.Id,
+                        Name = document.DocumentType == UserDocumentType.OtherDocumentType ? document.OtherDocumentType : document.DocumentType.ToString(),
+                        ValidTo = (DateTime)document.ValidTo,
+                        DocumentType = DocumentType.UserDocument
+                    })
+                .ToListAsync();
+
+            return listOfDocuments;
         }
     }
 }

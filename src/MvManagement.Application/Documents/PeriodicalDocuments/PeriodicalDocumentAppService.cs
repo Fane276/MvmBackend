@@ -1,11 +1,15 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.UI;
 using Catalogue.Documents;
 using Microsoft.EntityFrameworkCore;
+using MvManagement.Documents.Dto;
 using MvManagement.Documents.PeriodicalDocuments.Dto;
 using MvManagement.Extensions;
 using MvManagement.VehicleData;
@@ -17,14 +21,16 @@ namespace MvManagement.Documents.PeriodicalDocuments
     public class PeriodicalDocumentAppService : VehicleAppServiceBase, IPeriodicalDocumentAppService
     {
         private readonly IRepository<PeriodicalDocument, long> _periodicalDocumentRepository;
+        private readonly IRepository<Vehicle, long> _vehicleRepository;
         private readonly IRepository<PeriodicalDocumentType> _periodicalDocumentTypeRepository;
         public PeriodicalDocumentAppService(
             IVehiclePermissionManager vehiclePermissionManager, 
             IRepository<PeriodicalDocument, long> periodicalDocumentRepository, 
-            IRepository<PeriodicalDocumentType> periodicalDocumentTypeRepository) : base(vehiclePermissionManager)
+            IRepository<PeriodicalDocumentType> periodicalDocumentTypeRepository, IRepository<Vehicle, long> vehicleRepository) : base(vehiclePermissionManager)
         {
             _periodicalDocumentRepository = periodicalDocumentRepository;
             _periodicalDocumentTypeRepository = periodicalDocumentTypeRepository;
+            _vehicleRepository = vehicleRepository;
         }
 
         public async Task<ListResultDto<PeriodicalDocumentDto>> GetPeriodicalDocumentsAsync(long idVehicle)
@@ -113,6 +119,36 @@ namespace MvManagement.Documents.PeriodicalDocuments
                 .FirstOrDefaultAsync();
 
             return foundDocument;
+        }
+
+        public async Task<List<ExpiredDocumentDto>> GetExpiredPeriodicalDocumentsAllUserVehiclesAsync()
+        {
+            var currentUserId = AbpSession.UserId;
+
+            if (currentUserId == null)
+            {
+                throw new AbpAuthorizationException("User not authenticated");
+            }
+
+            var vehcicleIds = await _vehicleRepository.GetAll()
+                .Where(vehicle => vehicle.UserId == currentUserId)
+                .Select(vehicle => vehicle.Id).ToListAsync();
+
+            var listOfDocuments = await(from document in _periodicalDocumentRepository.GetAll()
+                where vehcicleIds.Contains(document.IdVehicle) && document.ValidTo.CompareTo(DateTime.Today) < 0
+                join vehicle in _vehicleRepository.GetAll() on document.IdVehicle equals vehicle.Id
+                join documentType in _periodicalDocumentTypeRepository.GetAll() on document.IdPeriodicalDocumentType equals documentType.Id
+                select new ExpiredDocumentDto
+                {
+                    Id = document.Id,
+                    Name = documentType.Name,
+                    VehicleTitle = vehicle.Title,
+                    ValidTo = document.ValidTo,
+                    DocumentType = DocumentType.Periodical
+                })
+                .ToListAsync();
+
+            return listOfDocuments;
         }
     }
 }
