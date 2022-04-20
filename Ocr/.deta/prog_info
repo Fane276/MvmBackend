@@ -1,0 +1,1 @@
+{"id":"b3a8a5f6-5f4f-4b0e-8fe4-826e186f32ff","space":14118,"runtime":"python3.9","name":"Ocr","path":"utrc3g","project":"a0uoeycw","account":"144798365827","region":"eu-central-1","deps":["fastapi","pytesseract","uvicorn","numpy"],"envs":null,"public":true,"log_level":"debug","cron":""}

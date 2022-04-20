@@ -111,7 +111,7 @@ def PostProcessing(text):
 # image = cv2.imread("Data/IMG_3524.PNG") # ss asigurare
 # image = cv2.imread("Data/IMG_4425.JPG") # bon
 # image = cv2.imread("Data/IMG_4448.JPG") # bon 2
-image = cv2.imread("Data/IMG_4453.JPG") # carnet
+# image = cv2.imread("Data/IMG_4453.JPG") # carnet
 
 # # scale_percent = 60 # percent of original size
 # # width = int(image.shape[1] * scale_percent / 100)
@@ -139,10 +139,10 @@ image = cv2.imread("Data/IMG_4453.JPG") # carnet
 
 # cv2.waitKey(0)
 
-output = ImagePreProcessing(image)
-text = pytesseract.image_to_string(output, lang='ron')
+# output = ImagePreProcessing(image)
+# text = pytesseract.image_to_string(output, lang='ron')
 
-print(text)
+# print(text)
 
-obj = PostProcessing(text)
-print(obj)
+# obj = PostProcessing(text)
+# print(obj)
