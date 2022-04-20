@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Abp.Application.Services;
 using Abp.Application.Services.Dto;
@@ -15,7 +14,6 @@ using Abp.Localization;
 using Abp.Runtime.Session;
 using Abp.UI;
 using MvManagement.Authorization;
-using MvManagement.Authorization.Accounts;
 using MvManagement.Authorization.Roles;
 using MvManagement.Authorization.Users;
 using MvManagement.Roles.Dto;
@@ -25,7 +23,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MvManagement.Users
 {
-    [AbpAuthorize(PermissionNames.Pages_Users)]
     public class UserAppService : AsyncCrudAppService<User, UserDto, long, PagedUserResultRequestDto, CreateUserDto, UserDto>, IUserAppService
     {
         private readonly UserManager _userManager;
@@ -53,6 +50,7 @@ namespace MvManagement.Users
             _logInManager = logInManager;
         }
 
+        [AbpAuthorize(PermissionNames.Pages_Users)]
         public override async Task<UserDto> CreateAsync(CreateUserDto input)
         {
             CheckCreatePermission();
@@ -76,6 +74,7 @@ namespace MvManagement.Users
             return MapToEntityDto(user);
         }
 
+        [AbpAuthorize(PermissionNames.Pages_Users)]
         public override async Task<UserDto> UpdateAsync(UserDto input)
         {
             CheckUpdatePermission();
@@ -94,6 +93,7 @@ namespace MvManagement.Users
             return await GetAsync(input);
         }
 
+        [AbpAuthorize(PermissionNames.Pages_Users)]
         public override async Task DeleteAsync(EntityDto<long> input)
         {
             var user = await _userManager.GetUserByIdAsync(input.Id);
@@ -118,12 +118,14 @@ namespace MvManagement.Users
             });
         }
 
+        [AbpAuthorize(PermissionNames.Pages_Users)]
         public async Task<ListResultDto<RoleDto>> GetRoles()
         {
             var roles = await _roleRepository.GetAllListAsync();
             return new ListResultDto<RoleDto>(ObjectMapper.Map<List<RoleDto>>(roles));
         }
 
+        [AbpAuthorize(PermissionNames.Pages_Users)]
         public async Task ChangeLanguage(ChangeUserLanguageDto input)
         {
             await SettingManager.ChangeSettingForUserAsync(
@@ -211,7 +213,7 @@ namespace MvManagement.Users
 
             return true;
         }
-
+        [AbpAuthorize(PermissionNames.Pages_Users)]
         public async Task<bool> ResetPassword(ResetPasswordDto input)
         {
             if (_abpSession.UserId == null)

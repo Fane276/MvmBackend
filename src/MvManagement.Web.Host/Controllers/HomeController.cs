@@ -48,5 +48,11 @@ namespace MvManagement.Web.Host.Controllers
 
             return Content("Sent notification: " + message);
         }
+
+        [HttpGet]
+        public IActionResult GetAppLogo()
+        {
+            return Redirect("/mvm-logo-large.png");
+        }
     }
 }

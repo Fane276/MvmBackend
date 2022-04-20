@@ -10,8 +10,6 @@ using Abp.UI;
 using Microsoft.EntityFrameworkCore;
 using MvManagement.Documents.Dto;
 using MvManagement.Documents.UserDocuments.Dto;
-using MvManagement.Extensions;
-using MvManagement.VehicleData;
 
 namespace MvManagement.Documents.UserDocuments
 {
@@ -95,7 +93,9 @@ namespace MvManagement.Documents.UserDocuments
                         Id = document.Id,
                         Name = document.DocumentType == UserDocumentType.OtherDocumentType ? document.OtherDocumentType : document.DocumentType.ToString(),
                         ValidTo = (DateTime)document.ValidTo,
-                        DocumentType = DocumentType.UserDocument
+                        DocumentType = DocumentType.UserDocument,
+                        UserId = (long)document.CreatorUserId,
+                        TenantId = (int)AbpSession.TenantId,
                     })
                 .ToListAsync();
 

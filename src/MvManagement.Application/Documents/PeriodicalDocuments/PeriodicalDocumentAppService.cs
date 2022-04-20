@@ -11,7 +11,6 @@ using Catalogue.Documents;
 using Microsoft.EntityFrameworkCore;
 using MvManagement.Documents.Dto;
 using MvManagement.Documents.PeriodicalDocuments.Dto;
-using MvManagement.Extensions;
 using MvManagement.VehicleData;
 using MvManagement.Vehicles;
 
@@ -144,7 +143,10 @@ namespace MvManagement.Documents.PeriodicalDocuments
                     Name = documentType.Name,
                     VehicleTitle = vehicle.Title,
                     ValidTo = document.ValidTo,
-                    DocumentType = DocumentType.Periodical
+                    DocumentType = DocumentType.Periodical,
+                    RegistrationNumber = vehicle.RegistrationNumber,
+                    UserId = (long)document.CreatorUserId,
+                    TenantId = (int)vehicle.TenantId,
                 })
                 .ToListAsync();
 
