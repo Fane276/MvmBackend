@@ -5,11 +5,13 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Abp;
 using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Configuration;
 using Abp.Zero.Configuration;
 using MvManagement.Authorization.Accounts.Dto;
 using MvManagement.Authorization.Users;
 using MvManagement.Roles.Dto;
+using MvManagement.Users.Dto;
 
 namespace MvManagement.Authorization.Accounts
 {
@@ -77,6 +79,43 @@ namespace MvManagement.Authorization.Accounts
             return await Task.FromResult(new ListResultDto<PermissionDto>(
                 ObjectMapper.Map<List<PermissionDto>>(permissions).OrderBy(p => p.DisplayName).ToList()
             ));
+        }
+
+        public async Task<UserDto> GetCurrentUserInfoAsync()
+        {
+            var userId = AbpSession.UserId;
+            if (userId == null)
+            {
+                throw new AbpAuthorizationException("Not logged in");
+            }
+
+            var currentUser = await UserManager.GetUserAsync(new UserIdentifier(AbpSession.TenantId, (long) userId));
+
+            return ObjectMapper.Map<UserDto>(currentUser);
+
+        }
+
+        public async Task UserUpdateAsync(UpdateUserInput input)
+        {
+            var userId = AbpSession.UserId;
+            if (userId == null)
+            {
+                throw new AbpAuthorizationException("Not logged in");
+            }
+
+            if (userId != input.Id)
+            {
+                throw new AbpAuthorizationException("Not authorized!");
+            }
+
+            var currentUser = await UserManager.GetUserAsync(new UserIdentifier(AbpSession.TenantId, (long)userId));
+
+            currentUser.Name = input.Name;
+            currentUser.Surname = input.Surname;
+            currentUser.EmailAddress = input.EmailAddress;
+            currentUser.UserName = input.UserName;
+
+            await UserManager.UpdateAsync(currentUser);
         }
     }
 }

@@ -3,6 +3,7 @@ using Abp.EntityHistory;
 using Abp.Organizations;
 using AutoMapper;
 using MvManagement.Authorization.Roles;
+using MvManagement.Authorization.Users;
 using MvManagement.Documents.Insurance;
 using MvManagement.Documents.Insurance.Dto;
 using MvManagement.Documents.PeriodicalDocuments;
@@ -12,6 +13,7 @@ using MvManagement.Documents.UserDocuments.Dto;
 using MvManagement.FuelManagement;
 using MvManagement.FuelManagement.Dto;
 using MvManagement.Roles.Dto;
+using MvManagement.Users.Dto;
 using MvManagement.VehicleData;
 using MvManagement.Vehicles.Dto;
 
@@ -36,6 +38,8 @@ namespace MvManagement
             configuration.CreateMap<InputRefillDto, FuelRefill>();
             configuration.CreateMap<FuelRefill, FuelRefillDto>();
             configuration.CreateMap<FuelRefillDto, FuelRefill>();
+
+            configuration.CreateMap<User, UserDto>();
         }
     }
 }
