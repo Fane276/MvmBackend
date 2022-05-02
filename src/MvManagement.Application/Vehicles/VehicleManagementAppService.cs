@@ -148,6 +148,8 @@ namespace MvManagement.Vehicles
                 throw new UserFriendlyException("Vehicle year is incorrect");
             }
 
+            input.RegistrationNumber = input.RegistrationNumber.ToUpper();
+
             var entity = ObjectMapper.Map<Vehicle>(input);
 
             if (input.TenantId == null)
@@ -166,6 +168,7 @@ namespace MvManagement.Vehicles
         }
         public async Task UpdateVehicleAsync(VehicleDto input)
         {
+            input.RegistrationNumber = input.RegistrationNumber.ToUpper();
             var entity = ObjectMapper.Map<Vehicle>(input);
 
             await _vehicleRepository.UpdateAsync(entity);

@@ -89,11 +89,11 @@ namespace MvManagement.Web.Host.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AbpActionResultWrapper<ChartResult>))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
-        public async Task<IActionResult> GetPricePerLastWeekAsync(long idVehicle)
+        public async Task<IActionResult> GetPricePerLastWeekAsync(long idVehicle, int period = 7)
         {
             try
             {
-                var result = await _fuelManagementAppService.GetPricePerLastWeekAsync(idVehicle);
+                var result = await _fuelManagementAppService.GetPricePerLastWeekAsync(idVehicle, period);
                 return Ok(result);
             }
             catch (AuthenticationException ex)
