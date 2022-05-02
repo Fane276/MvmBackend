@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Abp.Domain.Entities.Auditing;
 using MvManagement.VehicleData;
@@ -16,6 +17,7 @@ namespace MvManagement.FuelManagement
         public double FuelAmount { get; set; }
         public FuelUnit FuelUnit { get; set; }
         public double Price { get; set; }
+        public DateTime RefillDate { get; set; }
         [Required]
         [ForeignKey(nameof(Vehicle))]
         public long IdVehicle { get; set; }

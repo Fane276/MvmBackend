@@ -122,8 +122,8 @@ namespace MvManagement.FuelManagement
 
 
             var queryResult = await _fuelRefillRepository.GetAll()
-                .Where(f => f.IdVehicle == idVehicle && f.CreationTime.CompareTo(startDate)>=0 && f.CreationTime.CompareTo(DateTime.Now) <= 0) 
-                .Select(f=>new {date = new DateTime(f.CreationTime.Year, f.CreationTime.Month, f.CreationTime.Day), value = f.Price })
+                .Where(f => f.IdVehicle == idVehicle && f.RefillDate.CompareTo(startDate)>=0 && f.RefillDate.CompareTo(DateTime.Now) <= 0) 
+                .Select(f=>new {date = new DateTime(f.RefillDate.Year, f.RefillDate.Month, f.RefillDate.Day), value = f.Price })
                 .GroupBy(f=>f.date)
                 .Select(f=>new
                 {

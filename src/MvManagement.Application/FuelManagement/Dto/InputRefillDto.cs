@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Abp.Application.Services.Dto;
-using MvManagement.VehicleData;
+﻿using System;
 
 namespace MvManagement.FuelManagement.Dto
 {
@@ -12,5 +9,6 @@ namespace MvManagement.FuelManagement.Dto
         public FuelUnit FuelUnit { get; set; }
         public double Price { get; set; }
         public long IdVehicle { get; set; }
+        public DateTime RefillDate { get; set; }
     }
 }
