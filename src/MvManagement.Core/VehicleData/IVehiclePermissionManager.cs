@@ -12,7 +12,6 @@ namespace MvManagement.VehicleData
         /// </summary>
         /// <exception cref="AuthenticationException">Thrown when user not logged in</exception>
         Task<bool> CheckCurrentUserPermissionAsync(long vehicleId, string vehiclePermission);
-
         /// <summary>
         /// Method <c>CheckPermissionAsync</c> checks if user have specified permission
         /// </summary>
@@ -57,8 +56,21 @@ namespace MvManagement.VehicleData
         /// <param name="idVehicle">id of the vehicle on which permission are assigned</param>
         /// <returns></returns>
         Task<IEnumerable<VehiclePermission>> GetRolePermissions(int idRole, long idVehicle);
-
+        /// <summary>
+        /// Method <c>AsignUserRoleAsync</c> assign the specified user role for the vehicle.
+        /// </summary>
+        /// <param name="idUser">id of the assigned user</param>
+        /// <param name="roleName">name of the described role</param>
+        /// <param name="idVehicle">vehicle id</param>
+        /// <returns></returns>
         Task AsignUserRoleAsync(long idUser, string roleName, long idVehicle);
+        /// <summary>
+        /// Method <c>AsignUserRoleAsync</c> assign current user the specified user role for the vehicle.
+        /// </summary>
+        /// <param name="idUser">id of the assigned user</param>
+        /// <param name="roleName">name of the described role</param>
+        /// <param name="idVehicle">vehicle id</param>
+        /// <returns></returns>
         Task AsignCurrentUserRoleAsync(string roleName, long idVehicle);
     }
 }
