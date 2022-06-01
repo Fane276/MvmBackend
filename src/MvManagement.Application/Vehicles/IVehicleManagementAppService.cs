@@ -26,7 +26,7 @@ namespace MvManagement.Vehicles
         /// Vehicle production year should be a number between 1886 and current year
         /// </summary>
         /// <param name="input"></param>
-        Task UpdateVehicleAsync(VehicleDto input);
+        Task UpdateVehicleAsync(VehicleCreateDto input);
         /// <summary>
         /// Delete the vehicle with specified id
         /// </summary>

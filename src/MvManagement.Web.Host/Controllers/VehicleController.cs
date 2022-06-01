@@ -111,7 +111,7 @@ namespace MvManagement.Web.Host.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AbpActionResultWrapper<object>))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(string))]
-        public async Task<IActionResult> UpdateVehicleAsync(VehicleDto input)
+        public async Task<IActionResult> UpdateVehicleAsync(VehicleCreateDto input)
         {
             try
             {

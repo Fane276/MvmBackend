@@ -49,7 +49,7 @@ namespace MvManagement.Catalogues.Auto
 
             var listaMarci = marci.Where(m => RemoveDiacritics(m.Name.ToLower()).Contains(q.ToLower())).ToList();
 
-            listaMarci.Insert(0, new MakeAuto { Id = -1, Name = L("AltaMarca") });
+            listaMarci.Insert(0, new MakeAuto { Id = -1, Name = L("Other") });
 
             return new ListResultDto<MakeAuto>(listaMarci.ToList());
         }
@@ -59,7 +59,7 @@ namespace MvManagement.Catalogues.Auto
             var modele = await _modelAutoRepository.GetAll().Where(m => m.IdMake == idMarca).ToListAsync();
             var listaModele = modele.Where(m => RemoveDiacritics(m.Name.ToLower()).Contains(q.ToLower())).ToList();
 
-            listaModele.Insert(0, new ModelAuto { Id = -1, IdMake = idMarca, Name = L("AltModel") });
+            listaModele.Insert(0, new ModelAuto { Id = -1, IdMake = idMarca, Name = L("Other") });
 
             return new ListResultDto<ModelAuto>(listaModele.ToList());
         }

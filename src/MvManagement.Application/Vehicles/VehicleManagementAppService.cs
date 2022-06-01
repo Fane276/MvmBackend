@@ -75,9 +75,9 @@ namespace MvManagement.Vehicles
                     RegistrationNumber = vehicle.RegistrationNumber,
                     Title = vehicle.Title,
                     IdMakeAuto = vehicle.IdMakeAuto,
-                    IdModelAuto = vehicle.IdMakeAuto,
-                    MakeAuto = makeOrDefault.Name,
-                    ModelAuto = modelOrDefault.Name
+                    IdModelAuto = vehicle.IdModelAuto,
+                    MakeAuto = vehicle.IdMakeAuto!=null ? makeOrDefault.Name : vehicle.OtherAutoMake,
+                    ModelAuto = vehicle.IdModelAuto !=null ? modelOrDefault.Name : vehicle.OtherAutoModel
                 })
                 .ToListAsync();
 
@@ -130,8 +130,8 @@ namespace MvManagement.Vehicles
                         Title = vehicle.Title,
                         IdMakeAuto = vehicle.IdMakeAuto,
                         IdModelAuto = vehicle.IdMakeAuto,
-                        MakeAuto = makeOrDefault.Name,
-                        ModelAuto = modelOrDefault.Name
+                        MakeAuto = vehicle.IdMakeAuto != null ? makeOrDefault.Name : vehicle.OtherAutoMake,
+                        ModelAuto = vehicle.IdModelAuto != null ? modelOrDefault.Name : vehicle.OtherAutoModel
                     })
                 .ToListAsync();
 
@@ -166,7 +166,7 @@ namespace MvManagement.Vehicles
 
             return vehicleId;
         }
-        public async Task UpdateVehicleAsync(VehicleDto input)
+        public async Task UpdateVehicleAsync(VehicleCreateDto input)
         {
             input.RegistrationNumber = input.RegistrationNumber.ToUpper();
             var entity = ObjectMapper.Map<Vehicle>(input);
@@ -195,9 +195,9 @@ namespace MvManagement.Vehicles
                     Title = vehicle.Title,
                     IdMakeAuto = vehicle.IdMakeAuto,
                     IdModelAuto = vehicle.IdMakeAuto,
-                    MakeAuto = makeOrDefault.Name,
-                    ModelAuto = modelOrDefault.Name,
-                    VehicleType = makeCategoryOrDefault.Category
+                    MakeAuto = vehicle.IdMakeAuto != null ? makeOrDefault.Name : vehicle.OtherAutoMake,
+                    ModelAuto = vehicle.IdModelAuto != null ? modelOrDefault.Name : vehicle.OtherAutoModel,
+                    VehicleType = makeCategoryOrDefault!=null ? makeCategoryOrDefault.Category : 0
                 }).FirstOrDefaultAsync();
             return vehicleDto;
         }

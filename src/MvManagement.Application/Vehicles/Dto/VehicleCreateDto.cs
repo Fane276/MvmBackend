@@ -7,7 +7,7 @@ using MvManagement.Authorization.Users;
 
 namespace MvManagement.Vehicles.Dto
 {
-    public class VehicleCreateDto
+    public class VehicleCreateDto : EntityDto<long>
     {
         public string Title { get; set; }
         public int ProductionYear { get; set; }
@@ -18,5 +18,6 @@ namespace MvManagement.Vehicles.Dto
         public string OtherAutoMake { get; set; }
         public int? IdModelAuto { get; set; }
         public string OtherAutoModel { get; set; }
+        public long? UserId { get; set; }
     }
 }
