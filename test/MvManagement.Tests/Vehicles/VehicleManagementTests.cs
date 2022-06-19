@@ -22,27 +22,27 @@ namespace MvManagement.Tests.Vehicles
         [Fact]
         public async Task VehicleCreate_Test()
         {
+            //var vehicle = new VehicleCreateDto()
+            //{
+            //    ChassisNo = "012345678912345678", // only 17 characters are allowed
+            //    ProductionYear = 2000,
+            //    RegistrationNumber = "SB27ABC",
+            //    Title = "new car"
+            //};
+
+            //await Assert.ThrowsAsync<InvalidDataException>(() => _vehicleManagement.CreateVehicleAsync(vehicle));
+
+            //vehicle = new VehicleCreateDto()
+            //{
+            //    ChassisNo = "0123456789123456", // only 17 characters are allowed
+            //    ProductionYear = 2000,
+            //    RegistrationNumber = "SB27ABC",
+            //    Title = "new car"
+            //};
+
+            //await Assert.ThrowsAsync<InvalidDataException>(() => _vehicleManagement.CreateVehicleAsync(vehicle));
+
             var vehicle = new VehicleCreateDto()
-            {
-                ChassisNo = "012345678912345678", // only 17 characters are allowed
-                ProductionYear = 2000,
-                RegistrationNumber = "SB27ABC",
-                Title = "new car"
-            };
-
-            await Assert.ThrowsAsync<InvalidDataException>(() => _vehicleManagement.CreateVehicleAsync(vehicle));
-
-            vehicle = new VehicleCreateDto()
-            {
-                ChassisNo = "0123456789123456", // only 17 characters are allowed
-                ProductionYear = 2000,
-                RegistrationNumber = "SB27ABC",
-                Title = "new car"
-            };
-
-            await Assert.ThrowsAsync<InvalidDataException>(() => _vehicleManagement.CreateVehicleAsync(vehicle));
-
-            vehicle = new VehicleCreateDto()
             {
                 ChassisNo = "01234567891234567",
                 ProductionYear = 200,

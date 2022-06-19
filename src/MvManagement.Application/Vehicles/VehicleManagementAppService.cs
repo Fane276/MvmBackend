@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -59,6 +60,11 @@ namespace MvManagement.Vehicles
                 throw new AbpAuthorizationException("User not authenticated");
             }
 
+            if (AbpSession.TenantId > 1) // todo: nu e chiar ok asa
+            {
+                return await GetTenantVehiclesAsync(input);
+            }
+
             var listOfVehicles = await (from vehicle in _vehicleRepository.GetAll()
                 where vehicle.UserId == currentUserId
                 join makeAuto in _makeAutoRepository.GetAll() on vehicle.IdMakeAuto equals makeAuto.Id into make
@@ -101,43 +107,38 @@ namespace MvManagement.Vehicles
                 throw new AbpException("Tenant not specified");
             }
 
-            var idsVehiclesUserHasAccess = await _vehicleRoleUserRepository.GetAll()
-                .Join(
-                    _vehiclePermissionRepository.GetAll(),
-                    ur => ur.IdRole,
-                    p => p.IdRole,
-                    (ur, p) => new {userRole = ur, vehiclePermission = p}
-                )
-                .Where(o => (o.userRole.UserId == currentUserId || o.vehiclePermission.UserId == currentUserId) &&
-                            o.vehiclePermission.Name.Equals(VehiclePermissionNames.VehicleInfo.View))
-                .Select(o => o.vehiclePermission.IdVehicle)
-                .ToListAsync();
+            var idsVehiclesUserHasAccess = await (from userRole in _vehicleRoleUserRepository.GetAll()
+                join vehiclePermission in _vehiclePermissionRepository.GetAll() on userRole.IdRole equals vehiclePermission.IdRole
+                where vehiclePermission.Name == VehiclePermissionNames.VehicleInfo.View && 
+                      (userRole.UserId == AbpSession.UserId || vehiclePermission.UserId == AbpSession.UserId)
+                select userRole.IdVehicle
+                ).ToListAsync();
 
             var listOfVehicles = await (from vehicle in _vehicleRepository.GetAll()
-                    where vehicle.UserId == currentUserId && !idsVehiclesUserHasAccess.Contains(vehicle.Id)
-                    join makeAuto in _makeAutoRepository.GetAll() on vehicle.IdMakeAuto equals makeAuto.Id into make
-                    from makeOrDefault in make.DefaultIfEmpty()
-                    join modelAuto in _modelAutoRepository.GetAll() on vehicle.IdModelAuto equals modelAuto.Id into model
-                    from modelOrDefault in model.DefaultIfEmpty()
-                    select new VehicleDto()
-                    {
-                        Id = vehicle.Id,
-                        UserId = vehicle.UserId,
-                        TenantId = vehicle.TenantId,
-                        ChassisNo = vehicle.ChassisNo,
-                        ProductionYear = vehicle.ProductionYear,
-                        RegistrationNumber = vehicle.RegistrationNumber,
-                        Title = vehicle.Title,
-                        IdMakeAuto = vehicle.IdMakeAuto,
-                        IdModelAuto = vehicle.IdMakeAuto,
-                        MakeAuto = vehicle.IdMakeAuto != null ? makeOrDefault.Name : vehicle.OtherAutoMake,
-                        ModelAuto = vehicle.IdModelAuto != null ? modelOrDefault.Name : vehicle.OtherAutoModel
-                    })
+                where idsVehiclesUserHasAccess.Contains(vehicle.Id)
+                join makeAuto in _makeAutoRepository.GetAll() on vehicle.IdMakeAuto equals makeAuto.Id into make
+                from makeOrDefault in make.DefaultIfEmpty()
+                join modelAuto in _modelAutoRepository.GetAll() on vehicle.IdModelAuto equals modelAuto.Id into model
+                from modelOrDefault in model.DefaultIfEmpty()
+                select new VehicleDto()
+                {
+                    Id = vehicle.Id,
+                    UserId = vehicle.UserId,
+                    TenantId = vehicle.TenantId,
+                    ChassisNo = vehicle.ChassisNo,
+                    ProductionYear = vehicle.ProductionYear,
+                    RegistrationNumber = vehicle.RegistrationNumber,
+                    Title = vehicle.Title,
+                    IdMakeAuto = vehicle.IdMakeAuto,
+                    IdModelAuto = vehicle.IdMakeAuto,
+                    MakeAuto = vehicle.IdMakeAuto != null ? makeOrDefault.Name : vehicle.OtherAutoMake,
+                    ModelAuto = vehicle.IdModelAuto != null ? modelOrDefault.Name : vehicle.OtherAutoModel
+                })
                 .ToListAsync();
 
             listOfVehicles = listOfVehicles.WhereIf(!input.Filter.IsNullOrWhiteSpace(),
                 v => v.Title.Contains(input.Filter, StringComparison.InvariantCultureIgnoreCase)).ToList();
-
+            
             return new PagedResultEnumerableDto<VehicleDto>(listOfVehicles, input).Get();
         }
 

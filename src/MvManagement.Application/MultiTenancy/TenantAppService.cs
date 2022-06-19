@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Abp.Application.Services;
 using Abp.Application.Services.Dto;
@@ -15,6 +16,9 @@ using MvManagement.Authorization.Users;
 using MvManagement.Editions;
 using MvManagement.MultiTenancy.Dto;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using MvManagement.VehicleData;
+using MvManagement.VehicleData.VehicleAccess;
 
 namespace MvManagement.MultiTenancy
 {
@@ -26,6 +30,8 @@ namespace MvManagement.MultiTenancy
         private readonly UserManager _userManager;
         private readonly RoleManager _roleManager;
         private readonly IAbpZeroDbMigrator _abpZeroDbMigrator;
+        private readonly IRepository<VehicleRole> _vehicleRoleRepository;
+        private readonly IRepository<VehiclePermission, long> _vehiclePermissionRepository;
 
         public TenantAppService(
             IRepository<Tenant, int> repository,
@@ -33,7 +39,9 @@ namespace MvManagement.MultiTenancy
             EditionManager editionManager,
             UserManager userManager,
             RoleManager roleManager,
-            IAbpZeroDbMigrator abpZeroDbMigrator)
+            IAbpZeroDbMigrator abpZeroDbMigrator, 
+            IRepository<VehicleRole> vehicleRoleRepository, 
+            IRepository<VehiclePermission, long> vehiclePermissionRepository)
             : base(repository)
         {
             _tenantManager = tenantManager;
@@ -41,6 +49,8 @@ namespace MvManagement.MultiTenancy
             _userManager = userManager;
             _roleManager = roleManager;
             _abpZeroDbMigrator = abpZeroDbMigrator;
+            _vehicleRoleRepository = vehicleRoleRepository;
+            _vehiclePermissionRepository = vehiclePermissionRepository;
         }
 
         public override async Task<TenantDto> CreateAsync(CreateTenantDto input)
@@ -86,6 +96,8 @@ namespace MvManagement.MultiTenancy
                 // Assign admin user to role!
                 CheckErrors(await _userManager.AddToRoleAsync(adminUser, adminRole.Name));
                 await CurrentUnitOfWork.SaveChangesAsync();
+
+                await GenerateDefaultVehicleRoles(tenant.Id);
             }
 
             return MapToEntityDto(tenant);
@@ -117,6 +129,85 @@ namespace MvManagement.MultiTenancy
         private void CheckErrors(IdentityResult identityResult)
         {
             identityResult.CheckErrors(LocalizationManager);
+        }
+        public async Task GenerateDefaultVehicleRoles(int tenantId)
+        {
+            using (CurrentUnitOfWork.SetTenantId(tenantId))
+            {
+                var listOfPredefinedRoles = new List<VehicleRole>();
+                listOfPredefinedRoles.Add(new VehicleRole { TenantId = tenantId, Name = "Owner", Description = "Implicit assigned when adding a vehicle and have all the permissions" });
+                listOfPredefinedRoles.Add(new VehicleRole { TenantId = tenantId, Name = "Administrator", Description = "Have all the permissions to the vehicle including adding other roles" });
+                listOfPredefinedRoles.Add(new VehicleRole { TenantId = tenantId, Name = "Operator", Description = "Have all the permissions to the vehicle without adding other roles" });
+                listOfPredefinedRoles.Add(new VehicleRole { TenantId = tenantId, Name = "AdvanceDriver", Description = "Have access to see and edit all the documents" });
+                listOfPredefinedRoles.Add(new VehicleRole { TenantId = tenantId, Name = "Driver", Description = "Have access to see all the documents but can not edit them" });
+                listOfPredefinedRoles.ForEach(async role => await _vehicleRoleRepository.InsertAsync(role));
+                await CurrentUnitOfWork.SaveChangesAsync();
+
+                var listOfPermissionAssignment = new List<VehiclePermission>();
+
+                // Start - Owner role
+                var ownerRoleId = await _vehicleRoleRepository.GetAll().Where(p => p.TenantId == tenantId && p.Name.Equals("Owner")).Select(r => r.Id).FirstOrDefaultAsync();
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = ownerRoleId, Name = VehiclePermissionNames.UserRoles.View });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = ownerRoleId, Name = VehiclePermissionNames.UserRoles.Add });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = ownerRoleId, Name = VehiclePermissionNames.UserRoles.Remove });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = ownerRoleId, Name = VehiclePermissionNames.UserRoles.Update });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = ownerRoleId, Name = VehiclePermissionNames.VehicleInfo.View });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = ownerRoleId, Name = VehiclePermissionNames.VehicleInfo.Edit });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = ownerRoleId, Name = VehiclePermissionNames.VehicleDocuments.Insurance.View });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = ownerRoleId, Name = VehiclePermissionNames.VehicleDocuments.Insurance.Edit });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = ownerRoleId, Name = VehiclePermissionNames.VehicleDocuments.PeriodicalDocuments.View });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = ownerRoleId, Name = VehiclePermissionNames.VehicleDocuments.PeriodicalDocuments.Edit });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = ownerRoleId, Name = VehiclePermissionNames.VehicleDocuments.StorageDocuments.View });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = ownerRoleId, Name = VehiclePermissionNames.VehicleDocuments.StorageDocuments.Edit });
+                // End - Owner role
+                // Start - Administrator role
+                var administratorRoleId = await _vehicleRoleRepository.GetAll().Where(p => p.TenantId == tenantId && p.Name.Equals("Administrator")).Select(r => r.Id).FirstOrDefaultAsync();
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = administratorRoleId, Name = VehiclePermissionNames.UserRoles.View });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = administratorRoleId, Name = VehiclePermissionNames.UserRoles.Add });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = administratorRoleId, Name = VehiclePermissionNames.UserRoles.Remove });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = administratorRoleId, Name = VehiclePermissionNames.UserRoles.Update });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = administratorRoleId, Name = VehiclePermissionNames.VehicleInfo.View });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = administratorRoleId, Name = VehiclePermissionNames.VehicleInfo.Edit });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = administratorRoleId, Name = VehiclePermissionNames.VehicleDocuments.Insurance.View });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = administratorRoleId, Name = VehiclePermissionNames.VehicleDocuments.Insurance.Edit });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = administratorRoleId, Name = VehiclePermissionNames.VehicleDocuments.PeriodicalDocuments.View });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = administratorRoleId, Name = VehiclePermissionNames.VehicleDocuments.PeriodicalDocuments.Edit });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = administratorRoleId, Name = VehiclePermissionNames.VehicleDocuments.StorageDocuments.View });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = administratorRoleId, Name = VehiclePermissionNames.VehicleDocuments.StorageDocuments.Edit });
+                // End - Administrator role
+                // Start - Operator role
+                var operatorRoleId = await _vehicleRoleRepository.GetAll().Where(p => p.TenantId == tenantId && p.Name.Equals("Operator")).Select(r => r.Id).FirstOrDefaultAsync();
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = operatorRoleId, Name = VehiclePermissionNames.UserRoles.View });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = operatorRoleId, Name = VehiclePermissionNames.VehicleInfo.View });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = operatorRoleId, Name = VehiclePermissionNames.VehicleInfo.Edit });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = operatorRoleId, Name = VehiclePermissionNames.VehicleDocuments.Insurance.View });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = operatorRoleId, Name = VehiclePermissionNames.VehicleDocuments.Insurance.Edit });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = operatorRoleId, Name = VehiclePermissionNames.VehicleDocuments.PeriodicalDocuments.View });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = operatorRoleId, Name = VehiclePermissionNames.VehicleDocuments.PeriodicalDocuments.Edit });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = operatorRoleId, Name = VehiclePermissionNames.VehicleDocuments.StorageDocuments.View });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = operatorRoleId, Name = VehiclePermissionNames.VehicleDocuments.StorageDocuments.Edit });
+                // End - Operator role
+                // Start - AdvanceDriver role
+                var advenceDriverRoleId = await _vehicleRoleRepository.GetAll().Where(p => p.TenantId == tenantId && p.Name.Equals("AdvanceDriver")).Select(r => r.Id).FirstOrDefaultAsync();
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = advenceDriverRoleId, Name = VehiclePermissionNames.VehicleInfo.View });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = advenceDriverRoleId, Name = VehiclePermissionNames.VehicleDocuments.Insurance.View });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = advenceDriverRoleId, Name = VehiclePermissionNames.VehicleDocuments.Insurance.Edit });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = advenceDriverRoleId, Name = VehiclePermissionNames.VehicleDocuments.PeriodicalDocuments.View });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = advenceDriverRoleId, Name = VehiclePermissionNames.VehicleDocuments.PeriodicalDocuments.Edit });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = advenceDriverRoleId, Name = VehiclePermissionNames.VehicleDocuments.StorageDocuments.View });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = advenceDriverRoleId, Name = VehiclePermissionNames.VehicleDocuments.StorageDocuments.Edit });
+                // End - AdvanceDriver role
+                // Start - Driver role
+                var driverRoleId = await _vehicleRoleRepository.GetAll().Where(p => p.TenantId == tenantId && p.Name.Equals("Driver")).Select(r => r.Id).FirstOrDefaultAsync();
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = driverRoleId, Name = VehiclePermissionNames.VehicleInfo.View });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = driverRoleId, Name = VehiclePermissionNames.VehicleDocuments.Insurance.View });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = driverRoleId, Name = VehiclePermissionNames.VehicleDocuments.PeriodicalDocuments.View });
+                listOfPermissionAssignment.Add(new VehiclePermission { IdRole = driverRoleId, Name = VehiclePermissionNames.VehicleDocuments.StorageDocuments.View });
+                // End - Driver role
+                listOfPermissionAssignment.ForEach(async permission => await _vehiclePermissionRepository.InsertAsync(permission));
+                await CurrentUnitOfWork.SaveChangesAsync();
+            }
+            
         }
     }
 }
